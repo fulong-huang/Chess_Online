@@ -6,11 +6,13 @@ include(FetchContent)
 
 set(CMAKE_CXX_STANDARD 14)
 set(SFML_VERSION "2.5.1")
+Set(FETCHCONTENT_QUIET FALSE)
 
 FetchContent_Declare(
         sfml
         GIT_REPOSITORY "https://github.com/SFML/SFML.git"
         GIT_TAG        "${SFML_VERSION}"
+        GIT_PROGRESS TRUE
 )
 
 FetchContent_GetProperties(sfml)
