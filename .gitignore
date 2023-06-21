@@ -57,3 +57,5 @@ out/build
 Session.vim
 
 .DS_Store
+
+*.py

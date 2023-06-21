@@ -12,6 +12,8 @@ add_executable(${PROJECT_NAME}
     main.cpp
     src/board.cpp
     src/game.cpp
+    src/server.cpp
+    src/client.cpp
 )
 
 target_link_libraries (${PROJECT_NAME} sfml-graphics sfml-window sfml-system)
