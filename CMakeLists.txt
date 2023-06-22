@@ -5,6 +5,7 @@ project(CPP_Chess)
 include(FetchContent)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SFML_VERSION "2.5.1")
 Set(FETCHCONTENT_QUIET FALSE)
 
@@ -23,17 +24,21 @@ endif()
 
 find_package(SFML 2.5.1 COMPONENTS system window graphics)
 
-include_directories(external test src)
+include_directories(test src)
 
-add_executable(${PROJECT_NAME} 
-    main.cpp
+add_executable(Server
+    main_server.cpp
     src/board.cpp
     src/game.cpp
     src/server.cpp
+)
+
+add_executable(Client
+    main_client.cpp
     src/client.cpp
 )
 
-target_link_libraries (${PROJECT_NAME} sfml-graphics sfml-window sfml-system)
+target_link_libraries (Server sfml-graphics sfml-window sfml-system)
 
 
 

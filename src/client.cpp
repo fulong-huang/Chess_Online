@@ -1,48 +1,69 @@
-//// Client side C/C++ program to demonstrate Socket
-//// programming
-//#include <arpa/inet.h>
-//#include <stdio.h>
-//#include <string.h>
-//#include <sys/socket.h>
-//#include <unistd.h>
-//#define PORT 8080
-//  
-//int main(int argc, char const* argv[])
-//{
-//    int status, valread, client_fd;
-//    struct sockaddr_in serv_addr;
-//    const char* hello = "Hello from client";
-//    char buffer[1024] = { 0 };
-//    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-//        printf("\n Socket creation error \n");
-//        return -1;
-//    }
-//  
-//    serv_addr.sin_family = AF_INET;
-//    serv_addr.sin_port = htons(PORT);
-//  
-//    // Convert IPv4 and IPv6 addresses from text to binary
-//    // form
-//    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)
-//        <= 0) {
-//        printf(
-//            "\nInvalid address/ Address not supported \n");
-//        return -1;
-//    }
-//  
-//    if ((status
-//         = connect(client_fd, (struct sockaddr*)&serv_addr,
-//                   sizeof(serv_addr)))
-//        < 0) {
-//        printf("\nConnection Failed \n");
-//        return -1;
-//    }
-//    send(client_fd, hello, strlen(hello), 0);
-//    printf("Hello message sent\n");
-//    valread = read(client_fd, buffer, 1024);
-//    printf("%s\n", buffer);
-//  
-//    // closing the connected socket
-//    close(client_fd);
-//    return 0;
-//}
+#include "client.h"
+
+Client::Client(const char* server_addr, int portNum){
+
+    this->init_serv_addr(portNum);
+
+    if(!this->create_socket() ||
+            !this->convert_addr(server_addr) ||
+            !this->connect_server()){
+        return;
+    }
+
+    return;
+}
+
+void Client::init_serv_addr(int portNum){
+    this->serv_addr.sin_family = AF_INET;
+    this->serv_addr.sin_port = htons(portNum);
+}
+
+bool Client::create_socket(){
+    if((this->client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+        printf("\n Socket creation error \n");
+        return false;
+    }
+    return true;
+}
+
+bool Client::convert_addr(const char* server_addr){
+    if(inet_pton(AF_INET, server_addr, &this->serv_addr.sin_addr) <= 0){
+        printf("\nInvalid address/ Address not supported \n");
+        return false;
+    }
+    return true;
+}
+
+bool Client::connect_server(){
+    if(connect(this->client_fd, (struct sockaddr*)&this->serv_addr,
+               sizeof(this->serv_addr))
+            < 0){
+        printf("\nConnection Failed \n");
+        return false;
+    }
+    return true;
+}
+
+int Client::send_message(std::string msg){
+    return send(this->client_fd, msg.c_str(), msg.size(), 0);
+}
+
+int Client::receive_message(){
+    this->empty_buffer();
+    if(read(this->client_fd, this->buffer, 1024) <= 0){
+        return -1;
+    }
+    printf("%s\n", this->buffer);
+    return 1;
+}
+
+void Client::close_connection(){
+    close(client_fd);
+}
+
+void Client::empty_buffer(){
+    memset(this->buffer, 0, 1024);
+}
+
+
+

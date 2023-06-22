@@ -14,9 +14,9 @@ public:
 
     bool accept_connection();
 
-    void send_message();
+    int send_message(std::string msg);
 
-    void receive_message();
+    int receive_message();
     
     void shutdown_server();
 
@@ -26,10 +26,12 @@ private:
     bool connect_successfully;
     struct sockaddr_in address;
     int addrlen;
+    char buffer[1024];
 
 
     void init_address(int portNum);
     bool create_socket();
     bool bind_socket();
+    void empty_buffer();
 };
 

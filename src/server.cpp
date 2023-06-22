@@ -17,7 +17,7 @@ bool Server::success(){
 }
 
 bool Server::listen_connection(){
-    if(listen(this->server_fd, 3) < 0){
+    if(listen(this->server_fd, 1) < 0){
         perror("listen");
         this->connect_successfully = false;
     }
@@ -34,16 +34,17 @@ bool Server::accept_connection(){
     return this->connect_successfully;
 }
 
-void Server::send_message(){
-    std::string msg = "HELLO FROM SERVER";
-    send(this->client_socket, msg.c_str(), msg.size(), 0);
-    std::cout << "Message sent" << std::endl;
+int Server::send_message(std::string msg){
+    return send(this->client_socket, msg.c_str(), msg.size(), 0);
 }
 
-void Server::receive_message(){
-    char buffer[1024] = {0};
-    int messageLen = read(this->client_socket, buffer, 1024);
-    std::cout << buffer << std::endl;
+int Server::receive_message(){
+    this->empty_buffer();
+    if(read(this->client_socket, this->buffer, 1024) <= 0){
+        return -1;
+    }
+    std::cout << this->buffer << std::endl;
+    return 1;
 }
 
 void Server::shutdown_server(){
@@ -73,6 +74,10 @@ bool Server::bind_socket(){
         this->connect_successfully = false;
     }
     return this->connect_successfully;
+}
+
+void Server::empty_buffer(){
+    memset(this->buffer, 0, 1024);
 }
 
 
