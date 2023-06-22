@@ -7,7 +7,7 @@
 class Game{
 
 public:
-    Game();
+    Game(ChessBoard* board);
 
     void update();
     void display();
@@ -15,6 +15,7 @@ public:
     bool isRunning();
     void resizeBoard();
 
+    void updateBoard();
 
 
 private:
@@ -64,7 +65,7 @@ private:
     std::pair<int, int> prevTo;
     std::vector<int> validTargets;
 
-    ChessBoard board;
+    ChessBoard* board;
     std::vector<char> currBoard;
 
     bool promotion;

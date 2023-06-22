@@ -1,6 +1,6 @@
 #include "game.h"
 
-Game::Game(){
+Game::Game(ChessBoard* board){
     this->window.create(
             sf::VideoMode(800, 600), 
             "Chess", 
@@ -8,6 +8,7 @@ Game::Game(){
             );
     this->window.setFramerateLimit(15);
 
+    this->board = board;
 
     this->initGame();
     this->view.setSize(1000, 1000);
@@ -26,6 +27,11 @@ Game::Game(){
 
 
 }
+
+void Game::updateBoard(){
+    this->currBoard = this->board->getGameBoard();
+}
+
 void Game::setViewPort(){
     sf::Vector2u winSize = this->window.getSize();
     float windowRatio = (float)(winSize.x) / (winSize.y);
@@ -63,17 +69,17 @@ void Game::resizeBoard(){
 
 void Game::initGame(){
     this->running = true;
-    this->board.resetBoard();
-    this->currBoard = this->board.getGameBoard();
+    this->board->resetBoard();
+    this->currBoard = this->board->getGameBoard();
     this->moveFrom = {-1, -1};
     this->promotion = false;
     this->prevFrom = {-1, -1};
     this->validTargets = {};
-    this->whiteTurn = this->board.isWhiteTurn();
+    this->whiteTurn = this->board->isWhiteTurn();
 }
 
 void Game::handleMouseClick(){
-    if(!this->board.gameIsRunning()){
+    if(!this->board->gameIsRunning()){
         this->initGame();
         return;
     }
@@ -100,11 +106,11 @@ void Game::handleMouseClick(){
         else{
             targetPiece = QUEEN;
         }
-        if(this->board.move(this->moveFrom, this->moveTo, targetPiece)){
-            this->currBoard = this->board.getGameBoard();
+        if(this->board->move(this->moveFrom, this->moveTo, targetPiece)){
+            this->currBoard = this->board->getGameBoard();
             this->prevFrom = this->moveFrom;
             this->prevTo = this->moveTo;
-            if(!this->board.gameIsRunning()){
+            if(!this->board->gameIsRunning()){
                 if(this->whiteTurn){
                     this->gameOverText.setString("White\nWin!!!");
                 }
@@ -113,7 +119,7 @@ void Game::handleMouseClick(){
                 }
             }
         }
-        this->whiteTurn = this->board.isWhiteTurn();
+        this->whiteTurn = this->board->isWhiteTurn();
         this->moveFrom = {-1, -1};
         this->validTargets = {};
         return;
@@ -121,13 +127,13 @@ void Game::handleMouseClick(){
     int row, col;
     row = mousePos.y / this->gridSize.y;
     col = mousePos.x / this->gridSize.x;
-    if(this->board.isSelectable({row, col})){
+    if(this->board->isSelectable({row, col})){
         if(row == this->moveFrom.first && col == this->moveFrom.second){
             this->moveFrom = {-1, -1};
             this->validTargets = {};
             return;
         }
-        this->validTargets = this->board.getValidMovements(row, col);
+        this->validTargets = this->board->getValidMovements(row, col);
         this->moveFrom = {row, col};
         return;
     }
@@ -153,12 +159,12 @@ void Game::handleMouseClick(){
             this->moveTo = {row, col};
             return;
         }
-        bool success = this->board.move(this->moveFrom, {row, col});
+        bool success = this->board->move(this->moveFrom, {row, col});
         if(success){
-            this->currBoard = this->board.getGameBoard();
+            this->currBoard = this->board->getGameBoard();
             this->prevFrom = this->moveFrom;
             this->prevTo = {row, col};
-            if(!this->board.gameIsRunning()){
+            if(!this->board->gameIsRunning()){
                 if(this->whiteTurn){
                     this->gameOverText.setString("White\nWin!!!");
                 }
@@ -167,12 +173,12 @@ void Game::handleMouseClick(){
                 }
             }
         }
-        this->whiteTurn = this->board.isWhiteTurn();
+        this->whiteTurn = this->board->isWhiteTurn();
         this->validTargets.clear();
         this->moveFrom = {-1, -1};
     }
     else{
-//        this->validTargets = this->board.getValidMovements(row, col);
+//        this->validTargets = this->board->getValidMovements(row, col);
 //        this->moveFrom = {row, col};
     }
 }
@@ -259,7 +265,7 @@ void Game::drawPieces(){
 }
 
 void Game::displayOverlay(){
-    if(!this->board.gameIsRunning()){
+    if(!this->board->gameIsRunning()){
         sf::RectangleShape rectOverlay;
         rectOverlay.setSize(this->boardSize);
         rectOverlay.setFillColor(sf::Color(128, 128, 128, 192));

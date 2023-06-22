@@ -16,7 +16,7 @@ public:
 
     int send_message(std::string msg);
 
-    int receive_message();
+    int receive_message(char* buffer);
     
     void shutdown_server();
 

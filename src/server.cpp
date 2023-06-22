@@ -38,9 +38,8 @@ int Server::send_message(std::string msg){
     return send(this->client_socket, msg.c_str(), msg.size(), 0);
 }
 
-int Server::receive_message(){
-    this->empty_buffer();
-    if(read(this->client_socket, this->buffer, 1024) <= 0){
+int Server::receive_message(char *buffer){
+    if(read(this->client_socket, buffer, 1024) <= 0){
         return -1;
     }
     std::cout << this->buffer << std::endl;
