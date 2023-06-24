@@ -17,9 +17,12 @@ bool Server::success(){
 }
 
 bool Server::listen_connection(){
-    if(listen(this->server_fd, 1) < 0){
-        perror("listen");
+    if(listen(this->server_fd, 5) < 0){
+        perror("listen failed");
         this->connect_successfully = false;
+    }
+    else{
+        printf("Server listening, Waiting for connections\n");
     }
     return this->connect_successfully;
 }
@@ -28,8 +31,11 @@ bool Server::accept_connection(){
     if((this->client_socket = accept(this->server_fd, 
                     (struct sockaddr*)&this->address, 
                     (socklen_t*)&this->addrlen)) < 0){
-        perror("accept");
+        perror("accept failed");
         this->connect_successfully = false;
+    }
+    else{
+        printf("Client Accpeted");
     }
     return this->connect_successfully;
 }
@@ -42,7 +48,7 @@ int Server::receive_message(char *buffer){
     if(read(this->client_socket, buffer, 1024) <= 0){
         return -1;
     }
-    std::cout << this->buffer << std::endl;
+    printf("Received: %s\n", buffer);
     return 1;
 }
 
@@ -73,10 +79,6 @@ bool Server::bind_socket(){
         this->connect_successfully = false;
     }
     return this->connect_successfully;
-}
-
-void Server::empty_buffer(){
-    memset(this->buffer, 0, 1024);
 }
 
 

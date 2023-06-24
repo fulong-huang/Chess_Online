@@ -25,7 +25,6 @@ Game::Game(ChessBoard* board){
 
     this->initText();
 
-
 }
 
 void Game::updateBoard(){

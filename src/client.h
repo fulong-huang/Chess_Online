@@ -10,14 +10,12 @@ public:
     Client(const char* server_addr, int portNum = 25123);
     
     int send_message(std::string msg);
-    int receive_message();
+    int receive_message(char buffer[1024]);
     void close_connection();
-    void empty_buffer();
 
 
 private:
     int client_fd;
-    char buffer[1024];
     struct sockaddr_in serv_addr;
     bool connect_successfully;
 

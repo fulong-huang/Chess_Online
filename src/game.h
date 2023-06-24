@@ -16,7 +16,9 @@ public:
     void resizeBoard();
 
     void updateBoard();
+    void move(std::pair<int, int> from, std::pair<int, int> to);
 
+    void handleMouseClick();
 
 private:
     sf::View view;
@@ -77,7 +79,6 @@ private:
 
     void setViewPort();
     void initGame();
-    void handleMouseClick();
     void initTextures();
     void initText();
     void initSprite();

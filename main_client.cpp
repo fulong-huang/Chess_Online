@@ -6,10 +6,10 @@ int main(int argc, const char* argv[]){
 
     Client c(argv[1]);
 
-    c.send_message("Hello from Client!!!!!!!!!!");
-    c.receive_message();
-
     char buffer[1024];
+    c.send_message("Hello from Client!!!!!!!!!!");
+    c.receive_message(buffer);
+
     while(true){
         std::cout << "Enter a message to send ('exit' to exit): ";
         std::cin.getline(buffer, sizeof(buffer));

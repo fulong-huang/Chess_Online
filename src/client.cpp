@@ -48,21 +48,16 @@ int Client::send_message(std::string msg){
     return send(this->client_fd, msg.c_str(), msg.size(), 0);
 }
 
-int Client::receive_message(){
-    this->empty_buffer();
-    if(read(this->client_fd, this->buffer, 1024) <= 0){
+int Client::receive_message(char buffer[1024]){
+    if(read(this->client_fd, buffer, 1024) <= 0){
         return -1;
     }
-    printf("%s\n", this->buffer);
+    printf("Received: %s\n", buffer);
     return 1;
 }
 
 void Client::close_connection(){
     close(client_fd);
-}
-
-void Client::empty_buffer(){
-    memset(this->buffer, 0, 1024);
 }
 
 
