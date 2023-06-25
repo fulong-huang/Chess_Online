@@ -7,23 +7,25 @@
 class Game{
 
 public:
-    Game(ChessBoard* board);
-
-    void update();
-    void display();
-
-    bool isRunning();
-    void resizeBoard();
-
-    void updateBoard();
-    void move(std::pair<int, int> from, std::pair<int, int> to);
-
-    void handleMouseClick();
-
-private:
-    sf::View view;
     sf::RenderWindow window;
     sf::Event event;
+
+    // TODO
+    std::pair<int, int> savedFrom;
+    std::pair<int, int> savedTo;
+
+    Game();
+    void display();
+    bool isRunning();
+    void resizeBoard();
+    bool move(std::pair<int, int> from, std::pair<int, int> to);
+    bool handleMouseClick();
+    std::pair<int, int> moveFrom;
+    std::pair<int, int> moveTo;
+
+private:
+    std::vector<std::vector<int>> other_moves;
+    sf::View view;
     std::vector<sf::Texture> textureLists;
     std::vector<sf::Sprite> spriteLists;
 
@@ -61,13 +63,11 @@ private:
     bool running;
     int textureDisplaySize;
     bool whiteTurn;
-    std::pair<int, int> moveFrom;
-    std::pair<int, int> moveTo;
     std::pair<int, int> prevFrom;
     std::pair<int, int> prevTo;
     std::vector<int> validTargets;
 
-    ChessBoard* board;
+    ChessBoard board;
     std::vector<char> currBoard;
 
     bool promotion;

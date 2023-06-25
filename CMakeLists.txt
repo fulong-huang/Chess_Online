@@ -29,16 +29,16 @@ include_directories(test src)
 add_executable(Server
     main_server.cpp
     src/board.cpp
-    src/game.cpp
-    src/server.cpp
 )
 
 add_executable(Client
     main_client.cpp
     src/client.cpp
+    src/board.cpp
+    src/game.cpp
 )
 
-target_link_libraries (Server sfml-graphics sfml-window sfml-system)
+target_link_libraries (Client sfml-graphics sfml-window sfml-system)
 
 
 

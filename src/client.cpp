@@ -49,11 +49,8 @@ int Client::send_message(std::string msg){
 }
 
 int Client::receive_message(char buffer[1024]){
-    if(read(this->client_fd, buffer, 1024) <= 0){
-        return -1;
-    }
-    printf("Received: %s\n", buffer);
-    return 1;
+    int result = read(this->client_fd, buffer, 1024);
+    return result;
 }
 
 void Client::close_connection(){

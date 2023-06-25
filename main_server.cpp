@@ -8,12 +8,16 @@
 #include <vector>
 #include <mutex>
 #include <fcntl.h>
+#include <board.h>
 
+// Chess board created.
+ChessBoard board;
 
 std::vector<int> client_sockets;
 std::mutex client_sockets_lock;
+std::mutex board_lock;
 
-std::atomic<bool> listenFlag(false);
+std::atomic<bool> gameRunning(true);
 
 void handleClient(int client_socket);
 
@@ -23,7 +27,7 @@ int server_init(int server_port, struct sockaddr_in address){
     //
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        perror("socket failed");
+        std::cout << "SOCKET ERROR" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -57,7 +61,8 @@ void server_listen(int server_fd, struct sockaddr_in* address){
     struct timeval timeout;
     fd_set readSet;
     timeout.tv_sec = 1;
-    while(!listenFlag){
+    timeout.tv_usec = 0;
+    while(gameRunning){
         int new_socket;
         FD_ZERO(&readSet);
         FD_SET(server_fd, &readSet);
@@ -81,6 +86,7 @@ void server_listen(int server_fd, struct sockaddr_in* address){
             }
         }
     }
+    std::cout << "SERVER_STOP LISTENING" << std::endl;
 }
 
 void handleClient(int client_socket){
@@ -97,23 +103,12 @@ void handleClient(int client_socket){
     if(result_flagging == -1){
         std::cout << "ERROR SETTING FLAG" << std::endl;
     }
-    while(!listenFlag){
+    while(gameRunning){
         memset(buffer, 0, 1024);
         int byteRead = read(client_socket, buffer, 1024);
-        if(byteRead == -1){
+        if(byteRead == -1){ // No message received
             continue;
         }
-        std::cout << "Received message from client " << client_socket << 
-            ": " << buffer << std::endl;
-        {   // Mutex lock
-            std::lock_guard<std::mutex> lock(client_sockets_lock);
-            for(int i : client_sockets){
-                if(i != client_socket){
-                    send(i, buffer, byteRead, 0);
-                }
-            }
-        }
-        
         if(byteRead == 0){
             std::cout << "Client Disconnect" << std::endl;
             break;
@@ -122,8 +117,38 @@ void handleClient(int client_socket){
             std::cout << "Client Exit" << std::endl;
             break;
         }
+        send(client_socket, buffer, byteRead, 0);
+        char promote = QUEEN;
+        if(byteRead == 5){
+            promote = buffer[4];
+        }
+        else if(byteRead != 4){
+            std::cout << "Invalid message length" << std::endl;
+            continue;
+        }
+        bool move_result;
+        {
+            std::lock_guard<std::mutex> lock(board_lock);
+            move_result = board.move(
+                    {buffer[0] - '0', buffer[1] - '0'}, 
+                    {buffer[2] - '0', buffer[3] - '0'});
+            std::cout << "Received message from client " << client_socket << 
+                ": " << buffer << std::endl;
+        }
+        if(move_result){
+            std::cout << "valid message" << std::endl;
+            std::lock_guard<std::mutex> lock(client_sockets_lock);
+            for(int i : client_sockets){
+                if(i != client_socket){
+                    send(i, buffer, byteRead, 0);
+                }
+            }
+        }
+        
+        board.printBoard();
     }
     {   // Mutex Lock
+        std::cout << "Cleaning" << std::endl;
         std::lock_guard<std::mutex> lock(client_sockets_lock);
         auto it = std::find(
                 client_sockets.begin(), 
@@ -152,18 +177,18 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-
     struct sockaddr_in address;
     int server_fd = server_init(portNum, address);
 
     std::thread listen_thread(server_listen, server_fd, &address);
 
-    std::cout << "Press Enter to stop accepting client" << std::endl;
+    std::cout << "Press Enter to Stop Running" << std::endl;
     std::cin.ignore();
-    listenFlag = true;
+    gameRunning = false;
     listen_thread.join();
     std::cout << "Press Enter to EXIT" << std::endl;
     std::cin.ignore();
+    std::cout << client_sockets.size() << std::endl;
     return EXIT_SUCCESS;
 }
 

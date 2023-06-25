@@ -7,15 +7,15 @@
 class Client{
 
 public:
+    int client_fd;
+
     Client(const char* server_addr, int portNum = 25123);
-    
     int send_message(std::string msg);
     int receive_message(char buffer[1024]);
     void close_connection();
 
 
 private:
-    int client_fd;
     struct sockaddr_in serv_addr;
     bool connect_successfully;
 
