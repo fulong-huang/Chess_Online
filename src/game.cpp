@@ -69,18 +69,46 @@ void Game::initGame(){
     this->prevFrom = {-1, -1};
     this->validTargets = {};
     this->whiteTurn = this->board.isWhiteTurn();
-    other_moves.clear();
+    moves_back = NULL;
+    moves_count = 0;
+    while(moves_front != NULL){
+        PastMoves* curr = moves_front;
+        moves_front = moves_front->next;
+        delete curr;
+    }
 }
 
 // Check for return value, if value incorrect, request for new board.
 bool Game::move(std::pair<int, int> from, std::pair<int, int> to){
     if(this->board.move(from, to)){
-        other_moves.push_back({from.first, from.second, to.first, to.second});
+        PastMoves* currMove = new struct PastMoves();
+        currMove->next = moves_front;
+        currMove->prev = NULL;
+        currMove->moves = {from.first, from.second, to.first, to.second};
+        if(moves_front != NULL){
+            moves_front->prev = currMove;
+        }
+        moves_front = currMove;
+        moves_count++;
+        std::cout << "check NULL" << std::endl;
+        if(moves_back  == NULL){
+            moves_back = currMove;
+        }
+        else if(moves_count >= 5){
+            std::cout << "BEFORE DELETE" << std::endl;
+            moves_back = moves_back->prev;
+            std::cout << "BEFORE DELETE" << std::endl;
+            delete moves_back->next;
+            moves_back->next = NULL;
+            moves_count--;
+            std::cout << "Deleted tail" << std::endl;
+        }
         std::cout << "GAME::MOVE SUCCESSFUL!!!" << std::endl;
     }
     else{
         std::cout << "Unable to perform Move" << std::endl;
     }
+        std::cout << "MOVE" << std::endl;
     this->currBoard = this->board.getGameBoard();
 
     return true;
@@ -225,19 +253,42 @@ void Game::displaySideBar(){
 }
 
 void Game::drawPieces(){
-    if(prevFrom.first != -1){
-        sf::RectangleShape lastMove;
-        lastMove.setSize({this->gridSize.x + 2, this->gridSize.y + 2});
-        lastMove.setFillColor(sf::Color(50, 200, 50, 128));
+//    if(prevFrom.first != -1){
+//        sf::RectangleShape lastMove;
+//        lastMove.setSize({this->gridSize.x + 2, this->gridSize.y + 2});
+//        lastMove.setFillColor(sf::Color(50, 200, 50, 128));
+//        lastMove.setPosition(
+//                prevFrom.second * this->gridSize.x - 1,
+//                prevFrom.first * this->gridSize.y - 1);
+//        this->window.draw(lastMove);
+//        lastMove.setPosition(
+//                prevTo.second * this->gridSize.x - 1, 
+//                prevTo.first * this->gridSize.y - 1);
+//        this->window.draw(lastMove);
+//    }
+    sf::RectangleShape lastMove;
+    lastMove.setSize({this->gridSize.x + 2, this->gridSize.y + 2});
+    int opacity = 128;
+    PastMoves* curr = moves_front;
+    while(curr != NULL){
+        std::cout << "LOOP" << std::endl;
+        std::vector<int> v = curr->moves;
+        lastMove.setFillColor(sf::Color(50, 200, 50, opacity));
         lastMove.setPosition(
-                prevFrom.second * this->gridSize.x - 1,
-                prevFrom.first * this->gridSize.y - 1);
+                    v[1] * this->gridSize.x - 1,
+                    v[0] * this->gridSize.y - 1
+                );
         this->window.draw(lastMove);
         lastMove.setPosition(
-                prevTo.second * this->gridSize.x - 1, 
-                prevTo.first * this->gridSize.y - 1);
+                    v[3] * this->gridSize.x - 1,
+                    v[2] * this->gridSize.y - 1
+                );
         this->window.draw(lastMove);
+        opacity /= 2;
+        std::cout << "END LOOP " << std::endl;
+        curr = curr->next;
     }
+
     float xPos, yPos;
     int i, spriteIdx;
     for(int idx = 0; idx < this->currBoard.size(); idx++){

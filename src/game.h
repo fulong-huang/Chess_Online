@@ -24,7 +24,14 @@ public:
     std::pair<int, int> moveTo;
 
 private:
-    std::vector<std::vector<int>> other_moves;
+    struct PastMoves{
+        std::vector<int> moves;
+        PastMoves* prev;
+        PastMoves* next;
+    };
+    int moves_count;
+    PastMoves* moves_front;
+    PastMoves* moves_back;
     sf::View view;
     std::vector<sf::Texture> textureLists;
     std::vector<sf::Sprite> spriteLists;

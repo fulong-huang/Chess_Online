@@ -66,7 +66,6 @@ void server_listen(int server_fd, struct sockaddr_in* address){
         int new_socket;
         FD_ZERO(&readSet);
         FD_SET(server_fd, &readSet);
-        std::cout << "Checking pending connections" << std::endl;
         if(select(server_fd + 1, &readSet, NULL, NULL, &timeout) > 0){
             std::cout << "PENDING CONNECTION" << std::endl;
             if((new_socket = accept(server_fd, (struct sockaddr*)&address, 
@@ -134,7 +133,11 @@ void handleClient(int client_socket){
                     {buffer[2] - '0', buffer[3] - '0'});
             std::cout << "Received message from client " << client_socket << 
                 ": " << buffer << std::endl;
+            if(!board.gameIsRunning()){
+                board.resetBoard();
+            }
         }
+        std::cout << "Move Result = " << move_result << std::endl;
         if(move_result){
             std::cout << "valid message" << std::endl;
             std::lock_guard<std::mutex> lock(client_sockets_lock);
