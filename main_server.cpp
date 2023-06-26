@@ -63,6 +63,7 @@ void server_listen(int server_fd, struct sockaddr_in* address){
     timeout.tv_sec = 1;
     timeout.tv_usec = 0;
     while(gameRunning){
+        std::cout << "WAITING CONNECTION" << std::endl;
         int new_socket;
         FD_ZERO(&readSet);
         FD_SET(server_fd, &readSet);
@@ -88,9 +89,24 @@ void server_listen(int server_fd, struct sockaddr_in* address){
     std::cout << "SERVER_STOP LISTENING" << std::endl;
 }
 
+void sendBoard(int client_socket){
+    // TODO
+    std::string boardValues;
+}
+
 void handleClient(int client_socket){
     std::string msg = "Hello from server";
+
+        std::cout << "SEND HELLO" << msg << std::endl;
     send(client_socket, msg.c_str(), msg.size(), 0);
+        std::cout << "SEND HELLO" << msg << std::endl;
+    {
+        //std::lock_guard<std::mutex> lock(board_lock);
+        msg = board.boardToString();
+        std::cout << "BEFORE SEND BOARD: " << msg << std::endl;
+        send(client_socket, msg.c_str(), msg.size(), 0);
+        std::cout << "SEND BOARD: " << msg << std::endl;
+    }
     char buffer[1024];
 
     int flags = fcntl(client_socket, F_GETFL, 0);
@@ -116,7 +132,7 @@ void handleClient(int client_socket){
             std::cout << "Client Exit" << std::endl;
             break;
         }
-        send(client_socket, buffer, byteRead, 0);
+        //send(client_socket, buffer, byteRead, 0);
         char promote = QUEEN;
         if(byteRead == 5){
             promote = buffer[4];
@@ -142,9 +158,7 @@ void handleClient(int client_socket){
             std::cout << "valid message" << std::endl;
             std::lock_guard<std::mutex> lock(client_sockets_lock);
             for(int i : client_sockets){
-                if(i != client_socket){
-                    send(i, buffer, byteRead, 0);
-                }
+                send(i, buffer, byteRead, 0);
             }
         }
         

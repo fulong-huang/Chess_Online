@@ -14,8 +14,14 @@ void client_send(Client* c, std::string msg){
 void client_thread(Client* c){
     std::cout << "Client Started" << std::endl;
     char buffer[1024];
-    c->send_message("Hello from Client!!!!!!!!!!");
-    c->receive_message(buffer);
+    int byteRead = c->receive_message(buffer);
+    buffer[byteRead] = 0;
+    std::cout << "Received: " << std::endl;
+    std::cout << buffer << std::endl;
+    byteRead = c->receive_message(buffer);
+    std::cout << "Received board: "  << std::endl;
+    std::cout << buffer << std::endl;
+    game.stringToBoard(buffer, byteRead);
 
     int flags = fcntl(c->client_fd, F_GETFL, 0);
     if(flags == -1){
@@ -34,6 +40,8 @@ void client_thread(Client* c){
         }
         if(byteRead == 0){
             std::cout << "SERVER CONNECTION FAILED" << std::endl;
+            gameRunning = false;
+            break;
         }
         std::cout << "RECEIVED: " << buffer << std::endl;
         if(byteRead == 4){
@@ -74,7 +82,7 @@ int main(int argc, const char* argv[]){
     bool running = true;
     Client c(argv[1]);
     std::thread client(client_thread, &c);
-    while(running){
+    while(gameRunning){
         while(game.window.pollEvent(game.event)){
             switch(game.event.type){
                 case sf::Event::Closed:

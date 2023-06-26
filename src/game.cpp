@@ -171,6 +171,7 @@ bool Game::handleMouseClick(){
             return false;
         }
         this->validTargets = this->board.getValidMovements(row, col);
+        std::cout << "LSKJDFKLSDJ" << std::endl;
         this->moveFrom = {row, col};
         return false;
     }
@@ -271,7 +272,6 @@ void Game::drawPieces(){
     int opacity = 128;
     PastMoves* curr = moves_front;
     while(curr != NULL){
-        std::cout << "LOOP" << std::endl;
         std::vector<int> v = curr->moves;
         lastMove.setFillColor(sf::Color(50, 200, 50, opacity));
         lastMove.setPosition(
@@ -284,8 +284,7 @@ void Game::drawPieces(){
                     v[2] * this->gridSize.y - 1
                 );
         this->window.draw(lastMove);
-        opacity /= 2;
-        std::cout << "END LOOP " << std::endl;
+        opacity -= 30;
         curr = curr->next;
     }
 
@@ -464,4 +463,10 @@ void Game::initText(){
     this->restartText.setFillColor(sf::Color::Black);
 }
 
+bool Game::stringToBoard(char buffer[], int bufferSize){
+    bool result = this->board.stringToBoard(buffer, bufferSize);
+    this->whiteTurn = this->board.isWhiteTurn();
+    this->currBoard = this->board.getGameBoard();
+    return result;
+}
 

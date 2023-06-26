@@ -1,4 +1,5 @@
 #include "board.h"
+#include <string>
 
 ChessBoard::ChessBoard(){
     this->whiteTurn = true;
@@ -26,6 +27,79 @@ ChessBoard::ChessBoard(){
     this->whiteQueenSideCastle = true;
     this->blackKingSideCastle = true;
     this->whiteKingSideCastle = true;
+}
+
+bool ChessBoard::stringToBoard(char buffer[], int bufferSize){
+    std::cout << "STRING SIZE: " << bufferSize << std::endl;
+    if(bufferSize != 74){
+        std::cout << "Invalid String Size" << std::endl;
+        return false;
+    }
+    for(int i = 0; i < 64; i++){
+        this->board[i] = buffer[i];
+    }
+    this->whiteTurn = buffer[64];
+    this->gameRunning = buffer[65];
+    if(buffer[66] != '-'){
+        int val = buffer[66];
+        val *= 10;
+        val += buffer[67];
+        this->whitePassant = val;
+    }
+    else{
+        this->whitePassant = -64;
+    }
+    if(buffer[68] != '-'){
+        int val = buffer[68];
+        val *= 10;
+        val += buffer[69];
+        this->blackPassant = val;
+    }
+    else{
+        this->blackPassant = -64;
+    }
+    this->blackQueenSideCastle = buffer[70];
+    this->blackKingSideCastle = buffer[71];
+    this->whiteQueenSideCastle = buffer[72];
+    this->whiteKingSideCastle = buffer[73];
+    this->blackKingPos = 1;
+    this->whiteKingPos = 63;
+    this->findValidMovements();
+
+    return true;
+}
+
+std::string ChessBoard::boardToString(){
+    std::string result;
+    for(char c : this->board){
+        result += c;
+    }
+    result += this->whiteTurn;
+    result += gameRunning;
+    if(this->whitePassant < 0){
+        result += "--";
+    }
+    else{
+        int a = this->whitePassant / 10;
+        int b = this->whitePassant % 10;
+        result += a;
+        result += b;
+    }
+    if(this->blackPassant < 0){
+        result += "--";
+    }
+    else{
+        int a = this->blackPassant / 10;
+        int b = this->blackPassant % 10;
+        result += a;
+        result += b;
+    }
+    result += this->blackQueenSideCastle;
+    result += this->blackKingSideCastle;
+    result += this->whiteQueenSideCastle;
+    result += this->whiteKingSideCastle;
+
+    return result;
 }
 
 void ChessBoard::resetBoard(){
