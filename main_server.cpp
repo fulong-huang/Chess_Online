@@ -53,7 +53,7 @@ int server_init(int server_port, struct sockaddr_in address){
 }
 
 void server_listen(int server_fd, struct sockaddr_in* address){
-    if (listen(server_fd, 3) < 0) {
+    if (listen(server_fd, 20) < 0) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
@@ -63,19 +63,19 @@ void server_listen(int server_fd, struct sockaddr_in* address){
     timeout.tv_sec = 1;
     timeout.tv_usec = 0;
     while(gameRunning){
-        std::cout << "WAITING CONNECTION" << std::endl;
         int new_socket;
         FD_ZERO(&readSet);
         FD_SET(server_fd, &readSet);
         if(select(server_fd + 1, &readSet, NULL, NULL, &timeout) > 0){
             std::cout << "PENDING CONNECTION" << std::endl;
-            if((new_socket = accept(server_fd, (struct sockaddr*)&address, 
+            if((new_socket = accept(server_fd, (struct sockaddr*)address, 
                             (socklen_t*)&addrLen)) < 0){
-                std::cout << "Failed to accept client" << std::endl;
+                std::cout << "Failed to accept client: " << new_socket << std::endl;
+                std::cout << errno << std::endl;
                 return;
             }
             else{
-                std::cout << "Client accepted" << std::endl;
+                std::cout << "Client accepted: " << new_socket << std::endl;
                 std::thread client_thread(handleClient, new_socket);
                 client_thread.detach();
                 {
@@ -85,6 +85,9 @@ void server_listen(int server_fd, struct sockaddr_in* address){
                 std::cout << "Thread Detached" << std::endl;
             }
         }
+//        else{
+//            std::cout << "No Incomming Connection" << std::endl;
+//        }
     }
     std::cout << "SERVER_STOP LISTENING" << std::endl;
 }
@@ -196,6 +199,12 @@ int main(int argc, char* argv[]){
     int server_fd = server_init(portNum, address);
 
     std::thread listen_thread(server_listen, server_fd, &address);
+    std::cin.ignore();
+    char buffer[1024];
+    std::memset(buffer, 0, 1024);
+    board.boardToString(buffer);
+    send(5, buffer, 74, 0);
+    std::cout << "SEND BOARD" << std::endl;
 
     std::cout << "Press Enter to Stop Running" << std::endl;
     std::cin.ignore();

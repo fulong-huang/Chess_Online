@@ -171,7 +171,6 @@ bool Game::handleMouseClick(){
             return false;
         }
         this->validTargets = this->board.getValidMovements(row, col);
-        std::cout << "LSKJDFKLSDJ" << std::endl;
         this->moveFrom = {row, col};
         return false;
     }
