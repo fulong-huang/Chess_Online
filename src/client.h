@@ -8,6 +8,7 @@ class Client{
 
 public:
     int client_fd;
+    bool connect_successfully;
 
     Client(const char* server_addr, int portNum = 25123);
     int send_message(std::string msg);
@@ -17,7 +18,6 @@ public:
 
 private:
     struct sockaddr_in serv_addr;
-    bool connect_successfully;
 
     void init_serv_addr(int portNum);
     bool create_socket();

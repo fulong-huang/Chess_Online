@@ -14,10 +14,8 @@ void client_send(Client* c, std::string msg){
 void client_thread(Client* c){
     std::cout << "Client Started" << std::endl;
     char buffer[1024];
-    int byteRead = c->receive_message(buffer);
-    buffer[byteRead] = 0;
+    int byteRead;
     std::cout << "Received: " << std::endl;
-    std::cout << buffer << std::endl;
     byteRead = c->receive_message(buffer);
     std::cout << "Received board: "  << std::endl;
     std::cout << buffer << std::endl;
@@ -81,6 +79,10 @@ int main(int argc, const char* argv[]){
 
     bool running = true;
     Client c(argv[1]);
+    if(!c.connect_successfully){
+        std::cout << "NOT CONNECTED TO SERVER" << std::endl;
+        return -1;
+    }
     std::thread client(client_thread, &c);
     while(gameRunning){
         while(game.window.pollEvent(game.event)){

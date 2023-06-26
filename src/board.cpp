@@ -69,37 +69,36 @@ bool ChessBoard::stringToBoard(char buffer[], int bufferSize){
     return true;
 }
 
-std::string ChessBoard::boardToString(){
-    std::string result;
-    for(char c : this->board){
-        result += c;
+void ChessBoard::boardToString(char buffer[]){
+    for(int i = 0; i < this->board.size(); i++){
+        buffer[i] = this->board[i];
     }
-    result += this->whiteTurn;
-    result += gameRunning;
+    buffer[64] = this->whiteTurn;
+    buffer[65] = gameRunning;
     if(this->whitePassant < 0){
-        result += "--";
+        buffer[66] = '-';
+        buffer[67] = '-';
     }
     else{
         int a = this->whitePassant / 10;
         int b = this->whitePassant % 10;
-        result += a;
-        result += b;
+        buffer[66] = a;
+        buffer[67] = b;
     }
     if(this->blackPassant < 0){
-        result += "--";
+        buffer[68] = '-';
+        buffer[69] = '-';
     }
     else{
         int a = this->blackPassant / 10;
         int b = this->blackPassant % 10;
-        result += a;
-        result += b;
+        buffer[68] = a;
+        buffer[69] = b;
     }
-    result += this->blackQueenSideCastle;
-    result += this->blackKingSideCastle;
-    result += this->whiteQueenSideCastle;
-    result += this->whiteKingSideCastle;
-
-    return result;
+    buffer[70] = this->blackQueenSideCastle;
+    buffer[71] = this->blackKingSideCastle;
+    buffer[72] = this->whiteQueenSideCastle;
+    buffer[73] = this->whiteKingSideCastle;
 }
 
 void ChessBoard::resetBoard(){

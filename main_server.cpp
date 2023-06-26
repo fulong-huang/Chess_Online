@@ -95,19 +95,17 @@ void sendBoard(int client_socket){
 }
 
 void handleClient(int client_socket){
-    std::string msg = "Hello from server";
-
-        std::cout << "SEND HELLO" << msg << std::endl;
-    send(client_socket, msg.c_str(), msg.size(), 0);
-        std::cout << "SEND HELLO" << msg << std::endl;
-    {
-        //std::lock_guard<std::mutex> lock(board_lock);
-        msg = board.boardToString();
-        std::cout << "BEFORE SEND BOARD: " << msg << std::endl;
-        send(client_socket, msg.c_str(), msg.size(), 0);
-        std::cout << "SEND BOARD: " << msg << std::endl;
-    }
     char buffer[1024];
+    std::memset(buffer, 0, 1024);
+    {
+        for(int i = 0; i < 1000; i++){
+            
+        }
+        std::lock_guard<std::mutex> lock(board_lock);
+        board.boardToString(buffer);
+        send(client_socket, buffer, 74, 0);
+        std::cout << "SEND BOARD" << std::endl;
+    }
 
     int flags = fcntl(client_socket, F_GETFL, 0);
     if(flags == -1){

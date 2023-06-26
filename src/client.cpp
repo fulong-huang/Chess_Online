@@ -1,4 +1,5 @@
 #include "client.h"
+#include <cstring>
 
 Client::Client(const char* server_addr, int portNum){
 
@@ -21,6 +22,7 @@ void Client::init_serv_addr(int portNum){
 bool Client::create_socket(){
     if((this->client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
         printf("\n Socket creation error \n");
+        this->connect_successfully = false;
         return false;
     }
     return true;
@@ -29,6 +31,7 @@ bool Client::create_socket(){
 bool Client::convert_addr(const char* server_addr){
     if(inet_pton(AF_INET, server_addr, &this->serv_addr.sin_addr) <= 0){
         printf("\nInvalid address/ Address not supported \n");
+        this->connect_successfully = false;
         return false;
     }
     return true;
@@ -39,6 +42,7 @@ bool Client::connect_server(){
                sizeof(this->serv_addr))
             < 0){
         printf("\nConnection Failed \n");
+        this->connect_successfully = false;
         return false;
     }
     return true;
@@ -49,6 +53,7 @@ int Client::send_message(std::string msg){
 }
 
 int Client::receive_message(char buffer[1024]){
+    std::memset(buffer, 0, 1024);
     int result = read(this->client_fd, buffer, 1024);
     return result;
 }
