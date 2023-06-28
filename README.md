@@ -13,7 +13,7 @@
 <br/><br/>
 
 ## How to RUN:  (Game not complete, likely will not function as expected)
-&emsp;&emsp; Target CMAKE built location by running the following command from the root directory (will take a while to install SFML):
+&emsp;&emsp; running the following command from the root directory to target built location:
 <br/>
 ```
     cmake -S . -B <Target Build Directory>
@@ -33,8 +33,8 @@
 
 ## Not Working? Try these:
 ***
-* Make sure cmake was installed, and included in environment variables. <br/>
 * Server IP should be the public IP address from the server side (unless running locally).<br/>
+* Make sure cmake was installed, and included in environment variables. <br/>
 * Make sure the port was open and available, might need to forward the port to the server machine.<br/>
 
 
