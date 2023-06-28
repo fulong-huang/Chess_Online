@@ -7,8 +7,8 @@
  Features marked with (*) mean it is not implemented yet.
 * Unlimited amount of players.
 * Anyone can move any piece, as long as the movement is valid.
-* Each move will cost a movement point, whether it is valid or not (*).
-* Server will set cooldown time and maximum holding movement points (*).
+* (*) Each move will cost a movement point, whether it is valid or not.
+* (*) Server will set cooldown time and maximum holding movement points.
 * Only valid moves will be shown on the client side.
 <br/><br/>
 
