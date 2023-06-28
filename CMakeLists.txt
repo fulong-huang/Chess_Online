@@ -29,6 +29,8 @@ include_directories(test src)
 add_executable(Server
     main_server.cpp
     src/board.cpp
+    src/server.cpp
+    src/message.cpp
 )
 
 add_executable(Client
@@ -36,6 +38,7 @@ add_executable(Client
     src/client.cpp
     src/board.cpp
     src/game.cpp
+    src/message.cpp
 )
 
 target_link_libraries (Client sfml-graphics sfml-window sfml-system)

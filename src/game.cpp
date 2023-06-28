@@ -462,7 +462,7 @@ void Game::initText(){
     this->restartText.setFillColor(sf::Color::Black);
 }
 
-bool Game::stringToBoard(char buffer[], int bufferSize){
+bool Game::stringToBoard(std::vector<char> buffer, int bufferSize){
     bool result = this->board.stringToBoard(buffer, bufferSize);
     this->whiteTurn = this->board.isWhiteTurn();
     this->currBoard = this->board.getGameBoard();

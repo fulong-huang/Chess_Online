@@ -30,8 +30,8 @@ public:
     void setBoard(std::vector<char> target, bool turn = true);
     std::vector<int> getValidMovements(int row, int col);
 
-    void boardToString(char buffer[]);
-    bool stringToBoard(char buffer[], int bufferSize);
+    std::string boardToString();
+    bool stringToBoard(std::vector<char> buffer, int bufferSize);
 
 private:
     std::vector<char> board;

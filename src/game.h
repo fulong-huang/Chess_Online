@@ -23,7 +23,7 @@ public:
     std::pair<int, int> moveFrom;
     std::pair<int, int> moveTo;
     
-    bool stringToBoard(char buffer[], int bufferSize);
+    bool stringToBoard(std::vector<char> buffer, int bufferSize);
 
 private:
     struct PastMoves{

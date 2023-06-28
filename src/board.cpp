@@ -29,7 +29,7 @@ ChessBoard::ChessBoard(){
     this->whiteKingSideCastle = true;
 }
 
-bool ChessBoard::stringToBoard(char buffer[], int bufferSize){
+bool ChessBoard::stringToBoard(std::vector<char> buffer, int bufferSize){
     std::cout << "STRING SIZE: " << bufferSize << std::endl;
     if(bufferSize != 74){
         std::cout << "Invalid String Size" << std::endl;
@@ -69,36 +69,39 @@ bool ChessBoard::stringToBoard(char buffer[], int bufferSize){
     return true;
 }
 
-void ChessBoard::boardToString(char buffer[]){
+std::string ChessBoard::boardToString(){
+    std::string result;
     for(int i = 0; i < this->board.size(); i++){
-        buffer[i] = this->board[i];
+        result += this->board[i];
     }
-    buffer[64] = this->whiteTurn;
-    buffer[65] = gameRunning;
+    result += this->whiteTurn;
+    result += gameRunning;
     if(this->whitePassant < 0){
-        buffer[66] = '-';
-        buffer[67] = '-';
+        result += '-';
+        result += '-';
     }
     else{
         int a = this->whitePassant / 10;
         int b = this->whitePassant % 10;
-        buffer[66] = a;
-        buffer[67] = b;
+        result += a;
+        result += b;
     }
     if(this->blackPassant < 0){
-        buffer[68] = '-';
-        buffer[69] = '-';
+        result += '-';
+        result += '-';
     }
     else{
         int a = this->blackPassant / 10;
         int b = this->blackPassant % 10;
-        buffer[68] = a;
-        buffer[69] = b;
+        result += a;
+        result += b;
     }
-    buffer[70] = this->blackQueenSideCastle;
-    buffer[71] = this->blackKingSideCastle;
-    buffer[72] = this->whiteQueenSideCastle;
-    buffer[73] = this->whiteKingSideCastle;
+    result += this->blackQueenSideCastle;
+    result += this->blackKingSideCastle;
+    result += this->whiteQueenSideCastle;
+    result += this->whiteKingSideCastle;
+
+    return result;
 }
 
 void ChessBoard::resetBoard(){
