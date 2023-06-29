@@ -13,12 +13,12 @@
 
 ***
  Currently working on:
-* (*) User interfaces: Move points, player counts(?), move history char.
+* (*) User interfaces: Move points, player counts(?), move history chat.
 * (*) Server commands while running such as set cooldown.
 * (*) TBD.
 
 ## How to RUN:  (Game not complete, likely will not function as expected)
-&emsp;&emsp; Target CMAKE built location by running the following command from the root directory (will take a while to install SFML):
+&emsp;&emsp; Running the following command from the root directory to target CMAKE build directory:
 ```
     cmake -S . -B <Target Build Directory>
 ```
@@ -37,8 +37,8 @@
 
 ***
 ## Not Working? Try these:
-* Make sure cmake was installed, and included in environment variables. <br/>
 * Server IP should be the public IP address from the server side (unless running locally).<br/>
+* Make sure cmake was installed, and included in environment variables. <br/>
 * Make sure the port was open and available, might need to forward the port to the server machine.<br/>
 
 
