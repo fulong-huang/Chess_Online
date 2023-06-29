@@ -12,9 +12,10 @@
 * Only valid moves will be shown on the client side.
 
 ***
- Currently working on:
-* (*) User interfaces: Move points, player counts(?), move history chat.
-* (*) Server commands while running such as set cooldown.
+ TODO:
+* (*) Server commands while game running, such as set cooldown.
+* (*) User interfaces: Movement points, move history chat, player counts(?).
+* (*) UI for changing pawn pomotion type (Currently default to Queen).
 * (*) TBD.
 
 ## How to RUN:  (Game not complete, likely will not function as expected)
