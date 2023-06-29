@@ -62,9 +62,16 @@ bool ChessBoard::stringToBoard(std::vector<char> buffer, int bufferSize){
     this->blackKingSideCastle = buffer[71];
     this->whiteQueenSideCastle = buffer[72];
     this->whiteKingSideCastle = buffer[73];
-    this->blackKingPos = 1;
-    this->whiteKingPos = 63;
     this->findValidMovements();
+
+    for(int i = 0; i < this->board.size(); i++){
+        if(this->board[i] == KING){
+            this->blackKingPos = i;
+        }
+        else if(this->board[i] == KING + 10){
+            this->whiteKingPos = i;
+        }
+    }
 
     return true;
 }

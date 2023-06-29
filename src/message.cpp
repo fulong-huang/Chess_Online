@@ -2,16 +2,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <queue> 
-
-enum Msg{
-    Msg_Connect,
-    Msg_Board,
-    Msg_Move,
-    
-};
+#include <message.h>
 
 std::mutex queue_lock;
-std::queue<std::vector<char>> message_queue;
+std::queue<std::pair<int, std::vector<char>>> message_queue;
 
 void sendMessage(int fd, Msg messageType, std::string message){
     char buffer[message.size() + 1];
@@ -31,22 +25,30 @@ bool receiveMessage(int fd){
         return false;
     }
     switch(buffer[0]){
-        case Msg_Connect:
+        case CONNECT:
             std::cout << "CONNECT" << std::endl;
             byteRead = 17;
             break;
-        case Msg_Move:
+        case MOVE:
             std::cout << "Move" << std::endl;
             byteRead = 5;
             break;
-        case Msg_Board:
+        case BOARD_SEND:
             std::cout << "Board" << std::endl;
             byteRead = 74;
+            break;
+        case BOARD_REQ:
+            std::cout << "Request Board" << std::endl;
+            byteRead = 1;
             break;
         default:
             byteRead = 128;
             std::cout << "======UNKNOWN COMMAND======" << std::endl;
-            break;
+            std::cout << "======Clearing Pending Messages======" << std::endl;
+            while(byteRead == 128){
+                byteRead = read(fd, buffer, 128);
+            }
+            return true;
     }
     byteRead = read(fd, buffer, byteRead);
     if(byteRead <= 0){
@@ -57,15 +59,15 @@ bool receiveMessage(int fd){
 
     std::vector<char> data(buffer, buffer + byteRead);
     std::lock_guard<std::mutex> lock(queue_lock);
-    message_queue.push(data);
+    message_queue.push({fd, data});
     return true;
 }
 
-std::vector<char> getTopMessage(){
+std::pair<int, std::vector<char>> getTopMessage(){
     if(message_queue.empty()){
-        return {};
+        return {-1, {}};
     }
-    std::vector<char> msg = message_queue.front();
+    std::pair<int, std::vector<char>> msg = message_queue.front();
     message_queue.pop();
     return msg;
 }

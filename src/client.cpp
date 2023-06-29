@@ -47,7 +47,9 @@ void messageSender(Msg messageType, std::string msg){
 
 void processCommands(){
     while(gameRunning){
-        std::vector<char> msg = getTopMessage();
+        int server_fd;
+        std::vector<char> msg;
+        std::tie(server_fd, msg) = getTopMessage();
         if(msg.size() == 0){
             continue;
         }
@@ -60,8 +62,9 @@ void processCommands(){
                         {msg[0] - '0', msg[1] - '0'}, 
                         {msg[2] - '0', msg[3] - '0'}
                     );
-            // TODO:
-            //  if move failed, request for new board
+            if(!moveResult){
+                sendMessage(client_fd, BOARD_REQ, "b");
+            }
         }
         std::string msgString(msg.begin(), msg.end());
         std::cout << "RECEIVED MESSAGE: " << msgString << std::endl;
@@ -69,13 +72,11 @@ void processCommands(){
 }
 
 void runGame(){
-    bool running = true;
     while(gameRunning){
         while(game.window.pollEvent(game.event)){
             switch(game.event.type){
                 case sf::Event::Closed:
                     {
-                        running = false;
                         gameRunning = false;
                         break;
                     }
@@ -93,7 +94,7 @@ void runGame(){
                             //  Add a field to get promote unit
                             std::string msg = 
                                 combinePositions(game.savedFrom, game.savedTo);
-                            messageSender(Msg_Move, msg);
+                            sendMessage(client_fd, MOVE, msg);
                             game.moveFrom.first = -1;
                         }
                     }

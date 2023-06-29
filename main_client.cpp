@@ -20,7 +20,7 @@ int main(int argc, const char* argv[]){
     }
 
     initClient(argv[1], port);
-    messageSender(Msg_Connect, "Hello From Client");
+    messageSender(CONNECT, "Hello From Client");
 
     std::thread message_receiver(messageReceiver);
     std::thread command_processor(processCommands);

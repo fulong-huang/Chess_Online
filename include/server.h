@@ -10,8 +10,10 @@
 #include <board.h>
 #include <thread>
 #include <message.h>
+#include <cooldown.h>
 
 void initServer(int port);
+void resetCooldowns();
 
 void acceptClient();
 void clientHandler(int client_socket);

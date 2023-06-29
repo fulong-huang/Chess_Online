@@ -7,10 +7,15 @@
  Features marked with (*) mean it is not implemented yet.
 * Unlimited amount of players.
 * Anyone can move any piece, as long as the movement is valid.
-* Each move will cost a movement point, whether it is valid or not (*).
+* Each move will cost a movement point, whether the movement is valid or not.
 * Server will set cooldown time and maximum holding movement points (*).
 * Only valid moves will be shown on the client side.
-<br/><br/>
+<br/>
+***
+ Currently working on:
+* (*) User interfaces: Move points, player counts(?), move history char.
+* (*) Server commands while running such as set cooldown.
+* (*) TBD.
 
 ## How to RUN:  (Game not complete, likely will not function as expected)
 &emsp;&emsp; Target CMAKE built location by running the following command from the root directory (will take a while to install SFML):

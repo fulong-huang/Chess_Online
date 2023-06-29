@@ -4,9 +4,10 @@
 #include <queue> 
 
 enum Msg{
-    Msg_Connect,
-    Msg_Board,
-    Msg_Move,
+    CONNECT,
+    BOARD_SEND,
+    BOARD_REQ,
+    MOVE,
     
 };
 
@@ -14,7 +15,7 @@ void sendMessage(int fd, Msg messageType, std::string message);
 
 bool receiveMessage(int fd);
 
-std::vector<char> getTopMessage();
+std::pair<int, std::vector<char>> getTopMessage();
 
 
 

@@ -24,13 +24,14 @@ endif()
 
 find_package(SFML 2.5.1 COMPONENTS system window graphics)
 
-include_directories(test src)
+include_directories(test include)
 
 add_executable(Server
     main_server.cpp
     src/board.cpp
     src/server.cpp
     src/message.cpp
+    src/cooldown.cpp
 )
 
 add_executable(Client

@@ -20,7 +20,6 @@ int main(int argc, char* argv[]){
     std::cout << "Server Started" << std::endl;
     std::thread client_listener(acceptClient);
     std::thread command_processor(processCommands);
-
     client_listener.join();
     command_processor.join();
     return EXIT_SUCCESS;

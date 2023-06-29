@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <server.h>
 
 ChessBoard board;
@@ -54,10 +53,10 @@ void acceptClient(){
             }
             else{
                 std::cout << "Client Accepted: " << client_socket << std::endl;
-                sendMessage(client_socket, Msg_Connect, "Hello From Server");
+                sendMessage(client_socket, CONNECT, "Hello From Server");
                 {
                     std::lock_guard<std::mutex> lock(board_lock);
-                    sendMessage(client_socket, Msg_Board, board.boardToString());
+                    sendMessage(client_socket, BOARD_SEND, board.boardToString());
                     std::cout << "SEND BOARD" << std::endl;
                 }
 
@@ -84,7 +83,9 @@ void acceptClient(){
 
 void processCommands(){
     while(true){
-        std::vector<char> msg = getTopMessage();
+        int client_fd;
+        std::vector<char> msg;
+        std::tie(client_fd, msg) = getTopMessage();
         if(msg.size() == 0){
             continue;
         }
@@ -101,6 +102,13 @@ void processCommands(){
         }
         bool move_result;
         {
+            std::chrono::steady_clock::time_point curr_time =
+                std::chrono::steady_clock::now();
+            if(!updateCooldown(curr_time, client_fd)){
+                std::cout << "Client " << client_fd << 
+                    " attempted to move before cooldown finished" << std::endl;
+                continue;
+            }
             move_result = board.move(
                         {msg[0] - '0', msg[1] - '0'}, 
                         {msg[2] - '0', msg[3] - '0'}
@@ -108,6 +116,7 @@ void processCommands(){
             std::cout << "Client move result: " << move_result << std::endl;
             if(!board.gameIsRunning()){
                 board.resetBoard();
+                resetCooldowns();
             }
         }
         if(move_result){
@@ -115,13 +124,20 @@ void processCommands(){
             {
                 std::lock_guard<std::mutex> lock(client_fd_lock);
                 for(int i : client_fd_list){
-                    sendMessage(i, Msg_Move, msgString);
+                    sendMessage(i, MOVE, msgString);
                 }
             }
         }
-
+        else{
+            // TODO:
+            //  Send board to current fd
+            {
+                std::lock_guard<std::mutex> lock(board_lock);
+                sendMessage(client_fd, BOARD_SEND, board.boardToString());
+                std::cout << "SEND BOARD" << std::endl;
+            }
+        }
     }
-
 }
 
 void clientHandler(int client_socket){
@@ -133,5 +149,12 @@ void clientHandler(int client_socket){
     return;
 }
 
+//void initCooldowns(){
+//    std::chrono::steady_clock::time_point currTime =
+//        std::chrono::steady_clock::now();
+//    for(int i : client_fd_list){
+//        updateCooldown(currTime, i);
+//    }
+//}
 
 
