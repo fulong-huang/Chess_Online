@@ -8,17 +8,18 @@
 * Unlimited amount of players.
 * Anyone can move any piece, as long as the movement is valid.
 * Each move will cost a movement point, whether the movement is valid or not.
-* (*) Server will set cooldown time and maximum holding movement points.
+* Server will set cooldown time and maximum holding movement points.
 * Only valid moves will be shown on the client side.
 
 ***
- Currently working on:
-* (*) User interfaces: Move points, player counts(?), move history char.
-* (*) Server commands while running such as set cooldown.
+ TODO:
+* (*) Server commands while game running, such as set cooldown.
+* (*) User interfaces: Movement points, move history chat, player counts(?).
+* (*) UI for changing pawn pomotion type (Currently default to Queen).
 * (*) TBD.
 
 ## How to RUN:  (Game not complete, likely will not function as expected)
-&emsp;&emsp; Target CMAKE built location by running the following command from the root directory (will take a while to install SFML):
+&emsp;&emsp; Running the following command from the root directory to target CMAKE build directory:
 ```
     cmake -S . -B <Target Build Directory>
 ```
@@ -37,8 +38,8 @@
 
 ***
 ## Not Working? Try these:
-* Make sure cmake was installed, and included in environment variables. <br/>
 * Server IP should be the public IP address from the server side (unless running locally).<br/>
+* Make sure cmake was installed, and included in environment variables. <br/>
 * Make sure the port was open and available, might need to forward the port to the server machine.<br/>
 
 
