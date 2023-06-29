@@ -89,9 +89,6 @@ void runGame(){
                     {
                         bool success = game.handleMouseClick();
                         if(success){
-                            std::cout << "SUCCESS" << std::endl;
-                            // TODO
-                            //  Add a field to get promote unit
                             std::string msg = 
                                 combinePositions(game.savedFrom, game.savedTo);
                             sendMessage(client_fd, MOVE, msg);

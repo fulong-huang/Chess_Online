@@ -90,25 +90,19 @@ bool Game::move(std::pair<int, int> from, std::pair<int, int> to){
         }
         moves_front = currMove;
         moves_count++;
-        std::cout << "check NULL" << std::endl;
         if(moves_back  == NULL){
             moves_back = currMove;
         }
         else if(moves_count >= 5){
-            std::cout << "BEFORE DELETE" << std::endl;
             moves_back = moves_back->prev;
-            std::cout << "BEFORE DELETE" << std::endl;
             delete moves_back->next;
             moves_back->next = NULL;
             moves_count--;
-            std::cout << "Deleted tail" << std::endl;
         }
-        std::cout << "GAME::MOVE SUCCESSFUL!!!" << std::endl;
     }
     else{
         std::cout << "Unable to perform Move" << std::endl;
     }
-        std::cout << "MOVE" << std::endl;
     this->currBoard = this->board.getGameBoard();
 
     return true;

@@ -19,6 +19,8 @@ void acceptClient();
 void clientHandler(int client_socket);
 void processCommands();
 
+void stopServer();
+void closeServer();
 
 
 

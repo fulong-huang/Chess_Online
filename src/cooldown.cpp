@@ -23,7 +23,6 @@ bool updateCooldown(std::chrono::steady_clock::time_point curr_time, int fd){
                     curr_time - past_time
                     ).count();
         int maxSavedTime = cooldown * maxMoves;
-        std::cout << "Current Saved Time: " << saved_time << std::endl;
         if(saved_time > maxSavedTime){
             saved_time = maxSavedTime;
         }
@@ -40,5 +39,27 @@ void resetCooldowns(){
     client_cooldowns.clear();
 }
 
+void setCooldownTime(int duration){
+    if(duration <= 10){
+        std::cout << 
+            "Cooldown too short, please enter value greater or equal to 10." <<
+            " (time unit is [ms])" << std::endl;
+        return;
+    }
+    cooldown = duration;
+    std::cout << "Cooldown now set to: " <<
+        (float)duration / 1000 << " Seconds" << std::endl;
+}
+
+void setMaxMoves(int moves){
+    if(moves <= 0){
+        std::cout << 
+            "Invalid moves, please enter a non-zero positive number" << 
+            std::endl;
+        return;
+    }
+    maxMoves = moves;
+    std::cout << "Maximum moves is now: " << maxMoves << std::endl;
+}
 
 

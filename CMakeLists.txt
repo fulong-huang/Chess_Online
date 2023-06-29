@@ -4,9 +4,9 @@ project(CPP_Chess)
 
 include(FetchContent)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(SFML_VERSION "2.5.1")
+set(SFML_VERSION "2.6.0")
 Set(FETCHCONTENT_QUIET FALSE)
 
 FetchContent_Declare(
@@ -22,7 +22,7 @@ if(NOT sfml_POPULATED)
     add_subdirectory(${sfml_SOURCE_DIR} ${sfml_BINARY_DIR})
 endif()
 
-find_package(SFML 2.5.1 COMPONENTS system window graphics)
+find_package(SFML ${SFML_VERSION} COMPONENTS system window graphics)
 
 include_directories(test include)
 

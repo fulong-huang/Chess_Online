@@ -2,16 +2,20 @@
 
 ChessBoard board;
 
+bool server_running;
+
 int server_fd;
 int addrlen;
 struct sockaddr_in address;
 
 std::vector<int> client_fd_list;
+std::vector<int> teamBlack, teamWhite;
 
 std::mutex client_fd_lock;
 std::mutex board_lock;
 
 void initServer(int port){
+    server_running = true;
     addrlen = sizeof(address);
     if((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
         std::cout << "SOCKET ERROR" << std::endl;
@@ -39,7 +43,7 @@ void acceptClient(){
     timeout.tv_sec = 1;
     timeout.tv_usec = 0;
 
-    while(true){
+    while(server_running){
         int client_socket;
         FD_ZERO(&readSet);
         FD_SET(server_fd, &readSet);
@@ -82,7 +86,7 @@ void acceptClient(){
 }
 
 void processCommands(){
-    while(true){
+    while(server_running){
         int client_fd;
         std::vector<char> msg;
         std::tie(client_fd, msg) = getTopMessage();
@@ -142,19 +146,27 @@ void processCommands(){
 
 void clientHandler(int client_socket){
 
-    while(receiveMessage(client_socket)){
+    while(receiveMessage(client_socket) && server_running){
 
     }
     close(client_socket);
     return;
 }
 
-//void initCooldowns(){
-//    std::chrono::steady_clock::time_point currTime =
-//        std::chrono::steady_clock::now();
-//    for(int i : client_fd_list){
-//        updateCooldown(currTime, i);
-//    }
-//}
+void initCooldowns(){
+    std::chrono::steady_clock::time_point currTime =
+        std::chrono::steady_clock::now();
+    for(int i : client_fd_list){
+        updateCooldown(currTime, i);
+    }
+}
+
+void stopServer(){
+    server_running = false;
+}
+
+void closeServer(){
+    close(server_fd);
+}
 
 
