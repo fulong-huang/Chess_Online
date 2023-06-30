@@ -20,7 +20,7 @@ ChessBoard::ChessBoard(){
     this->whiteKingPos = 60;
     this->blackKingPos = 4;
     this->findValidMovements();
-    this->gameRunning = true;
+    this->gameRunning = false;
     this->whitePassant = -64;
     this->blackPassant = -64;
     this->blackQueenSideCastle = true;
@@ -129,7 +129,7 @@ void ChessBoard::resetBoard(){
     }
     this->whiteKingPos = 60;
     this->blackKingPos = 4;
-    this->gameRunning = true;
+    this->gameRunning = false;
     this->findValidMovements();
     this->whitePassant = -64;
     this->blackPassant = -64;
@@ -139,6 +139,9 @@ void ChessBoard::resetBoard(){
     this->whiteKingSideCastle = true;
 }
 
+void ChessBoard::startGame(){
+    this->gameRunning = true;
+}
 
 std::vector<int> ChessBoard::getValidMovements(int row, int col){
     int from = row * 8 + col;
@@ -387,7 +390,7 @@ bool ChessBoard::move(
         std::pair<int, int> from, std::pair<int, int> to, char promote
     ){
     if(!this->gameRunning){
-        std::cout << "Game already ended!!!" << std::endl;
+        std::cout << "Game Not Started!!!" << std::endl;
     }
     int curr = from.first * 8 + from.second;
     int target = to.first * 8 + to.second;
@@ -635,7 +638,7 @@ bool ChessBoard::boardInCheck(){
 
 void ChessBoard::switchTurn(){
     if(!this->gameRunning){
-        std::cout << "Game already ended!!!" << std::endl;
+        std::cout << "Game Not Started!!!" << std::endl;
         return;
     }
     this->whiteTurn = !this->whiteTurn;
@@ -1199,7 +1202,7 @@ void ChessBoard::setBoard(std::vector<char> newBoard, bool turn){
 
     this->whiteTurn = turn;
     this->board = newBoard;
-    this->gameRunning = true;
+    this->gameRunning = false;
     this->findValidMovements();
     this->whitePassant = -64;
     this->blackPassant = -64;

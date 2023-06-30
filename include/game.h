@@ -16,12 +16,13 @@ public:
 
     Game();
     void display();
-    bool isRunning();
     void resizeBoard();
     bool move(std::pair<int, int> from, std::pair<int, int> to);
     bool handleMouseClick();
     std::pair<int, int> moveFrom;
     std::pair<int, int> moveTo;
+    void startGame();
+    void setWinner(bool white);
     
     bool stringToBoard(std::vector<char> buffer, int bufferSize);
 
@@ -66,10 +67,9 @@ private:
     sf::Sprite wqueenSprite;
     sf::Sprite wkingSprite;
     sf::Font font;
-    sf::Text gameOverText;
-    sf::Text restartText;
+    sf::Text overlayText;
+    sf::Text overlaySmallText;
 
-    bool running;
     int textureDisplaySize;
     bool whiteTurn;
     std::pair<int, int> prevFrom;
@@ -94,6 +94,6 @@ private:
     void drawPieces();
     void displayOverlay();
     void displaySideBar();
-    
+    void clearHistory();
 };
 

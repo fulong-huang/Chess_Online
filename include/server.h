@@ -22,5 +22,9 @@ void processCommands();
 void stopServer();
 void closeServer();
 
+void startGame();
+void endGame();
+bool gameIsRunning();
+
 
 

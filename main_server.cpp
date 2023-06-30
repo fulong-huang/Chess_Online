@@ -27,7 +27,10 @@ int main(int argc, char* argv[]){
         if(command.starts_with("exit")){
             break;
         }
-        if(command.starts_with("cooldown")){
+        if(command.starts_with("start")){
+            startGame();
+        }
+        else if(command.starts_with("cooldown")){
             int duration;
             command = command.substr(8);
             try{

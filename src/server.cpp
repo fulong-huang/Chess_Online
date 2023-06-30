@@ -3,6 +3,7 @@
 ChessBoard board;
 
 bool server_running;
+bool game_running;
 
 int server_fd;
 int addrlen;
@@ -100,10 +101,21 @@ void processCommands(){
         if(msg.size() == 5){
             promote = msg[4];
         }
+        else if(msg.size() == 1){
+            std::lock_guard<std::mutex> lock(board_lock);
+            sendMessage(client_fd, BOARD_SEND, board.boardToString());
+            std::cout << "SEND BOARD" << std::endl;
+            continue;
+        }
+        else if(msg.size() == 17){
+            std::cout << "CLIENT CONNECTION MESSAGE" << std::endl;
+            continue;
+        }
         else{
             std::cout << "Invalid message length" << std::endl;
             continue;
         }
+        if(!game_running) continue;
         bool move_result;
         {
             std::chrono::steady_clock::time_point curr_time =
@@ -119,6 +131,9 @@ void processCommands(){
                     );
             std::cout << "Client move result: " << move_result << std::endl;
             if(!board.gameIsRunning()){
+                std::string s;
+                s += board.isWhiteTurn();
+                sendMessage(client_fd, END, s);
                 board.resetBoard();
                 resetCooldowns();
             }
@@ -156,6 +171,7 @@ void clientHandler(int client_socket){
 void initCooldowns(){
     std::chrono::steady_clock::time_point currTime =
         std::chrono::steady_clock::now();
+    std::lock_guard<std::mutex> lock(client_fd_lock);
     for(int i : client_fd_list){
         updateCooldown(currTime, i);
     }
@@ -167,6 +183,30 @@ void stopServer(){
 
 void closeServer(){
     close(server_fd);
+}
+
+void startGame(){
+    initCooldowns();
+    game_running = true;
+    board.startGame();
+    std::lock_guard<std::mutex> lock(board_lock);
+    std::string boardString = board.boardToString();
+    {
+        std::lock_guard<std::mutex> lock(client_fd_lock);
+        for(int i : client_fd_list){
+            sendMessage(i, BOARD_SEND, boardString);
+            sendMessage(i, START, "s");
+        }
+    }
+}
+
+void endGame(){
+    resetCooldowns();
+    game_running = false;
+}
+
+bool gameIsRunning(){
+    return game_running;
 }
 
 

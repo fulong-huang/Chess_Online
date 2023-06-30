@@ -2,17 +2,20 @@
 
 Game::Game(){
     this->window.create(
-            sf::VideoMode(800, 600), 
+            sf::VideoMode(900, 600), 
             "Chess", 
             sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize
             );
     this->window.setFramerateLimit(15);
 
+    this->moves_front = NULL;
+    this->moves_back = NULL;
+    this->moves_count = 0;
     this->initGame();
     this->view.setSize(1000, 1000);
     this->resizeBoard();
-    this->gridSize = {800.0/8, 125};
-    this->boardSize = {800, 1000};
+    this->gridSize = {700.0/8, 125};
+    this->boardSize = {700, 1000};
 
     this->textureDisplaySize = 42;
     this->pieceScale = {
@@ -22,13 +25,12 @@ Game::Game(){
     this->initSprite();
 
     this->initText();
-
 }
 
 void Game::setViewPort(){
     sf::Vector2u winSize = this->window.getSize();
     float windowRatio = (float)(winSize.x) / (winSize.y);
-    float viewRatio = 1000.f / 800;
+    float viewRatio = 1000.f / 700;
     float sizeX = 1;
     float sizeY = 1;
     float posX = 0;
@@ -61,7 +63,7 @@ void Game::resizeBoard(){
 }
 
 void Game::initGame(){
-    this->running = true;
+    std::cout << "LKSJDLFKJ" << std::endl;
     this->board.resetBoard();
     this->currBoard = this->board.getGameBoard();
     this->moveFrom = {-1, -1};
@@ -69,13 +71,18 @@ void Game::initGame(){
     this->prevFrom = {-1, -1};
     this->validTargets = {};
     this->whiteTurn = this->board.isWhiteTurn();
-    moves_back = NULL;
-    moves_count = 0;
+    this->clearHistory();
+}
+
+void Game::clearHistory(){
     while(moves_front != NULL){
         PastMoves* curr = moves_front;
         moves_front = moves_front->next;
         delete curr;
     }
+    moves_front = NULL;
+    moves_back = NULL;
+    moves_count = 0;
 }
 
 // Check for return value, if value incorrect, request for new board.
@@ -108,9 +115,14 @@ bool Game::move(std::pair<int, int> from, std::pair<int, int> to){
     return true;
 }
 
+void Game::startGame(){
+    this->clearHistory();
+    this->board.startGame();
+}
+
 bool Game::handleMouseClick(){
     if(!this->board.gameIsRunning()){
-        this->initGame();
+        //this->initGame();
         return false;
     }
     sf::Vector2f mousePos = this->window.mapPixelToCoords(sf::Mouse::getPosition(this->window));
@@ -143,10 +155,10 @@ bool Game::handleMouseClick(){
             this->prevTo = this->moveTo;
             if(!this->board.gameIsRunning()){
                 if(this->whiteTurn){
-                    this->gameOverText.setString("White\nWin!!!");
+                    this->overlayText.setString("White\nWin!!!");
                 }
                 else{
-                    this->gameOverText.setString("Black\nWin!!!");
+                    this->overlayText.setString("Black\nWin!!!");
                 }
             }
         }
@@ -236,13 +248,17 @@ void Game::display(){
 void Game::displaySideBar(){
 
     sf::RectangleShape r;
-    r.setSize(sf::Vector2f(300, 500));
-    r.setPosition(800, 0);
-    r.setFillColor(sf::Color(215, 115, 5));
+    r.setSize(sf::Vector2f(400, 500));
+    r.setPosition(700, 0);
+    r.setFillColor(sf::Color(135, 70, 5));
     this->window.draw(r);
 
-    r.setPosition(800, 500);
-    r.setFillColor(sf::Color(135, 70, 5));
+    r.setPosition(700, 500);
+    r.setFillColor(sf::Color(215, 115, 5));
+    this->window.draw(r);
+    r.setSize(sf::Vector2f(10, 1000));
+    r.setPosition(700, 0);
+    r.setFillColor(sf::Color::Black);
     this->window.draw(r);
 }
 
@@ -306,8 +322,9 @@ void Game::displayOverlay(){
         rectOverlay.setSize(this->boardSize);
         rectOverlay.setFillColor(sf::Color(128, 128, 128, 192));
         this->window.draw(rectOverlay);
-        this->window.draw(this->gameOverText);
-        this->window.draw(this->restartText);
+        this->window.draw(this->overlayText);
+        this->window.draw(this->overlaySmallText);
+        //this->window.draw(this->restartText);
         return;
     }
     if(this->moveFrom.first != -1){
@@ -368,11 +385,6 @@ void Game::displayOverlay(){
         this->window.draw(s);
     }
 }
-
-bool Game::isRunning(){
-    return this->running;
-}
-
 
 void Game::initTextures(){
     std::string srcDir = std::__fs::filesystem::path(__FILE__).parent_path();
@@ -439,21 +451,62 @@ void Game::initSprite(){
     }
 }
 
-void Game::initText(){
-    this->gameOverText.setFont(this->font);
-    this->gameOverText.setString("ABCDE\nWIN!!!");
-    this->gameOverText.setCharacterSize(150); // 86
-    this->gameOverText.setPosition( this->gridSize.x * 1 + 18,
-                                    this->gridSize.y * 2 + 10);
-    this->gameOverText.setFillColor(sf::Color::Black);
-    this->gameOverText.setStyle(sf::Text::Bold);
+void Game::setWinner(bool white){
+    if(white){
+        this->overlayText.setFont(this->font);
+        this->overlayText.setString("Winner\n.White.");
+        this->overlayText.setCharacterSize(100); // 86
+        float centerXPos = 
+            (-this->boardSize.x + this->overlayText.getGlobalBounds().width) /2.f + 20;
+        float centerYPos = 
+            (-this->boardSize.y+this->overlayText.getGlobalBounds().height*2)/2.f;
+        this->overlayText.setOrigin(centerXPos, centerYPos);
+        this->overlayText.setStyle(sf::Text::Bold);
+        this->overlayText.setFillColor(sf::Color::White);
+        this->overlaySmallText.setFillColor(sf::Color::White);
+    }
+    else{
+        this->overlayText.setFont(this->font);
+        this->overlayText.setString("Winner\n.Black.");
+        this->overlayText.setCharacterSize(100); // 86
+        float centerXPos = 
+            (-this->boardSize.x + this->overlayText.getGlobalBounds().width) /2.f + 20;
+        float centerYPos = 
+            (-this->boardSize.y+this->overlayText.getGlobalBounds().height*2)/2.f;
+        this->overlayText.setOrigin(centerXPos, centerYPos);
+        this->overlayText.setStyle(sf::Text::Bold);
+        this->overlayText.setFillColor(sf::Color::Black);
+        this->overlaySmallText.setFillColor(sf::Color::Black);
+    }
+}
 
-    this->restartText.setFont(this->font);
-    this->restartText.setString("Left Click to Restart");
-    this->restartText.setCharacterSize(32);
-    this->restartText.setPosition(this->gridSize.x * 1.5 + 16, 
-                                    this->gridSize.y * 5);
-    this->restartText.setFillColor(sf::Color::Black);
+void Game::initText(){
+    this->overlayText.setFont(this->font);
+    this->overlayText.setString("");
+    this->overlayText.setCharacterSize(100); // 86
+    float centerXPos = 
+        (-this->boardSize.x + this->overlayText.getGlobalBounds().width) /2.f + 20;
+    float centerYPos = 
+        (-this->boardSize.y+this->overlayText.getGlobalBounds().height*2)/2.f;
+    this->overlayText.setOrigin(centerXPos, centerYPos);
+    this->overlayText.setFillColor(sf::Color::Black);
+    this->overlayText.setStyle(sf::Text::Bold);
+
+    this->overlaySmallText.setFont(this->font);
+    this->overlaySmallText.setString("wait for server to start...");
+    this->overlaySmallText.setCharacterSize(32); // 86
+    centerXPos = 
+        (-this->boardSize.x+this->overlaySmallText.getGlobalBounds().width)/2.f+20;
+    centerYPos -= this->overlayText.getGlobalBounds().height + 100; 
+    this->overlaySmallText.setOrigin(centerXPos, centerYPos);
+    this->overlaySmallText.setFillColor(sf::Color::Black);
+    this->overlaySmallText.setStyle(sf::Text::Bold);
+//    this->restartText.setFont(this->font);
+//    this->restartText.setString("");
+//    this->restartText.setCharacterSize(32);
+//    this->restartText.setPosition(this->gridSize.x * 1.5 + 16, 
+//                                    this->gridSize.y * 5);
+//    this->restartText.setFillColor(sf::Color::Black);
 }
 
 bool Game::stringToBoard(std::vector<char> buffer, int bufferSize){

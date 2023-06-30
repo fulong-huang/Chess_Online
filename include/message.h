@@ -8,7 +8,8 @@ enum Msg{
     BOARD_SEND,
     BOARD_REQ,
     MOVE,
-    
+    START,
+    END,
 };
 
 void sendMessage(int fd, Msg messageType, std::string message);

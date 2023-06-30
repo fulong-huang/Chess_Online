@@ -42,7 +42,14 @@ add_executable(Client
     src/message.cpp
 )
 
+add_executable(Test
+    test.cpp
+    src/board.cpp
+    src/game.cpp
+)
+
 target_link_libraries (Client sfml-graphics sfml-window sfml-system)
+target_link_libraries (Test sfml-graphics sfml-window sfml-system)
 
 
 

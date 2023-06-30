@@ -18,6 +18,7 @@ public:
 
     bool boardInCheck();
     bool gameIsRunning();
+    void startGame();
     bool compare(ChessBoard board2);
     bool isSelectable(std::pair<int, int> piece);
     bool isWhiteTurn();

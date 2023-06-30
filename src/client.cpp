@@ -57,6 +57,18 @@ void processCommands(){
             game.stringToBoard(msg, msg.size());
             continue;
         }
+        if(msg.size() == 1){
+            if(msg[0] < 2){
+                game.setWinner(!msg[0]);
+                std::cout << "WINNER: " << (int)msg[0] << std::endl;
+                continue;
+            }
+            if(msg[0] == 's'){
+                game.startGame();
+                continue;
+            }
+            std::cout << "===== UNKNOWN COMMAND ======" << std::endl;
+        }
         if(msg.size() == 5){
             bool moveResult = game.move(
                         {msg[0] - '0', msg[1] - '0'}, 

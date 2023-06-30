@@ -26,19 +26,21 @@ bool receiveMessage(int fd){
     }
     switch(buffer[0]){
         case CONNECT:
-            std::cout << "CONNECT" << std::endl;
             byteRead = 17;
             break;
         case MOVE:
-            std::cout << "Move" << std::endl;
             byteRead = 5;
             break;
         case BOARD_SEND:
-            std::cout << "Board" << std::endl;
             byteRead = 74;
             break;
         case BOARD_REQ:
-            std::cout << "Request Board" << std::endl;
+            byteRead = 1;
+            break;
+        case START:
+            byteRead = 1;
+            break;
+        case END:
             byteRead = 1;
             break;
         default:
