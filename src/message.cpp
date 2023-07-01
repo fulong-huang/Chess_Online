@@ -43,6 +43,12 @@ bool receiveMessage(int fd){
         case END:
             byteRead = 1;
             break;
+        case INIT_CD:
+            byteRead = 3;
+            break;
+        case RENEW_CD:
+            byteRead = 2;
+            break;
         default:
             byteRead = 128;
             std::cout << "======UNKNOWN COMMAND======" << std::endl;

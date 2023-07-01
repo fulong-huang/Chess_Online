@@ -6,16 +6,16 @@ Game::Game(){
             "Chess", 
             sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize
             );
-    this->window.setFramerateLimit(15);
+    this->window.setFramerateLimit(60);
 
     this->moves_front = NULL;
     this->moves_back = NULL;
     this->moves_count = 0;
     this->initGame();
     this->view.setSize(1000, 1000);
+    this->boardSize = {700, 950};
+    this->gridSize = {this->boardSize.x/8.f, this->boardSize.y/8.f};
     this->resizeBoard();
-    this->gridSize = {700.0/8, 125};
-    this->boardSize = {700, 1000};
 
     this->textureDisplaySize = 42;
     this->pieceScale = {
@@ -30,7 +30,8 @@ Game::Game(){
 void Game::setViewPort(){
     sf::Vector2u winSize = this->window.getSize();
     float windowRatio = (float)(winSize.x) / (winSize.y);
-    float viewRatio = 1000.f / 700;
+    float viewRatio = this->boardSize.y / this->boardSize.x;
+    std::cout << "View Ratio: " << viewRatio << std::endl;
     float sizeX = 1;
     float sizeY = 1;
     float posX = 0;
@@ -260,6 +261,33 @@ void Game::displaySideBar(){
     r.setPosition(700, 0);
     r.setFillColor(sf::Color::Black);
     this->window.draw(r);
+
+    r.setPosition(0, 965);
+    r.setFillColor(sf::Color::Black);
+    r.setSize(sf::Vector2f(695, 25));
+
+    r.setOutlineThickness(5);
+    r.setOutlineColor(sf::Color(127, 127, 127));
+    this->window.draw(r);
+    r.setOutlineThickness(0);
+
+    r.setPosition(0, 965);
+    r.setFillColor(sf::Color::Green);
+    float percentage = this->cd_curr / (float)(this->cd * this->cd_stored);
+    r.setSize(sf::Vector2f(percentage * 700, 25));
+    this->window.draw(r);
+    
+    r.setSize(sf::Vector2f(5, 25));
+    r.setFillColor(sf::Color(127, 127, 127));
+    float segment = 700.f / this->cd_stored;
+    for(int i = 1; i < this->cd_stored; i++){
+        r.setPosition(i * segment - 2, 965);
+        this->window.draw(r);
+    }
+    r.setPosition(0, 965);
+    this->window.draw(r);
+    r.setPosition(695, 965);
+    this->window.draw(r);
 }
 
 void Game::drawPieces(){
@@ -316,10 +344,67 @@ void Game::drawPieces(){
     }
 }
 
+void Game::updateCurrCD(int amount){
+    if(!this->board.gameIsRunning()){
+        return;
+    }
+    this->cd_curr += amount;
+    if(this->cd_curr > this->cd * this->cd_stored){
+        this->cd_curr = this->cd * this->cd_stored;
+    }
+}
+
+void Game::initCD(std::vector<char> msg){
+    if(msg[0] < 0){
+        this->cd = 256 + msg[0];
+    }
+    else{
+        this->cd = msg[0];
+    }
+
+    this->cd *= 255;
+
+    if(msg[1] < 0){
+        this->cd += (256 + msg[1]);
+    }
+    else{
+        this->cd += msg[1];
+    }
+
+    if(msg[2] < 0){
+        this->cd_stored = 256 + msg[2];
+    }
+    else{
+        this->cd_stored = msg[2];
+    }
+
+    if(this->cd_curr > this->cd){
+        this->cd_curr = this->cd;
+    }
+    std::cout << "CD: " << this->cd << ", " << this->cd_stored << std::endl;
+}
+
+void Game::updateServerCD(int percent){
+    std::cout << "RECEIVED PERCENTAGE: " << percent << std::endl;
+    this->cd_curr = (percent / 127.f) * (this->cd_stored * this->cd);
+}
+
+void Game::setCD(int newCD){
+    this->cd = newCD;
+}
+
+void Game::setCDCurr(int newCD){
+    this->cd_curr = newCD;
+}
+
+void Game::setCDStored(int amount){
+    this->cd_stored = amount;
+}
+
 void Game::displayOverlay(){
     if(!this->board.gameIsRunning()){
         sf::RectangleShape rectOverlay;
-        rectOverlay.setSize(this->boardSize);
+        rectOverlay.setSize(sf::Vector2f(700, 960));
         rectOverlay.setFillColor(sf::Color(128, 128, 128, 192));
         this->window.draw(rectOverlay);
         this->window.draw(this->overlayText);
@@ -327,6 +412,7 @@ void Game::displayOverlay(){
         //this->window.draw(this->restartText);
         return;
     }
+    
     if(this->moveFrom.first != -1){
         sf::CircleShape circle(1);
         circle.setScale({(this->boardSize.x / 16), (this->boardSize.y / 16)});

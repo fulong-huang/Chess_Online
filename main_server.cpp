@@ -36,6 +36,7 @@ int main(int argc, char* argv[]){
             try{
                 duration = std::stoi(command);
                 setCooldownTime(duration);
+                updateCD();
             }
             catch(std::exception e){
                 std::cout << e.what() << std::endl;
@@ -47,6 +48,7 @@ int main(int argc, char* argv[]){
             try{
                 moves = std::stoi(command);
                 setMaxMoves(moves);
+                updateCD();
             }
             catch(std::exception e){
                 std::cout << e.what() << std::endl;

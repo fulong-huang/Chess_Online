@@ -26,5 +26,6 @@ void startGame();
 void endGame();
 bool gameIsRunning();
 
+void updateCD();
 
 

@@ -60,7 +60,6 @@ void processCommands(){
         if(msg.size() == 1){
             if(msg[0] < 2){
                 game.setWinner(!msg[0]);
-                std::cout << "WINNER: " << (int)msg[0] << std::endl;
                 continue;
             }
             if(msg[0] == 's'){
@@ -68,6 +67,15 @@ void processCommands(){
                 continue;
             }
             std::cout << "===== UNKNOWN COMMAND ======" << std::endl;
+            continue;
+        }
+        if(msg.size() == 2){
+            game.updateServerCD(msg[0]);
+            continue;
+        }
+        if(msg.size() == 3){
+            game.initCD(msg);
+            continue;
         }
         if(msg.size() == 5){
             bool moveResult = game.move(
@@ -84,7 +92,16 @@ void processCommands(){
 }
 
 void runGame(){
+    std::chrono::steady_clock::time_point prev_time, curr_time;
+    prev_time = std::chrono::steady_clock::now();
     while(gameRunning){
+        // Update times
+        curr_time = std::chrono::steady_clock::now();
+        game.updateCurrCD(
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                        curr_time - prev_time
+                    ).count());
+        prev_time = curr_time;
         while(game.window.pollEvent(game.event)){
             switch(game.event.type){
                 case sf::Event::Closed:

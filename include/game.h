@@ -26,6 +26,13 @@ public:
     
     bool stringToBoard(std::vector<char> buffer, int bufferSize);
 
+    void setCD(int newCD);
+    void setCDCurr(int newCD);
+    void setCDStored(int amount);
+    void initCD(std::vector<char> msg);
+    void updateCurrCD(int amount);
+    void updateServerCD(int percent);
+
 private:
     struct PastMoves{
         std::vector<int> moves;
@@ -80,7 +87,10 @@ private:
     std::vector<char> currBoard;
 
     bool promotion;
-    
+    int cd; // cooldown time
+    int cd_curr; // current progress
+    int cd_stored;  // Total holding amount
+
     std::pair<float, float> padding;
     sf::Vector2f boardSize;
     sf::Vector2f gridSize;

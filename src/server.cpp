@@ -123,6 +123,8 @@ void processCommands(){
             if(!updateCooldown(curr_time, client_fd)){
                 std::cout << "Client " << client_fd << 
                     " attempted to move before cooldown finished" << std::endl;
+                std::string cdMessage = getCDAsMessage();
+                sendMessage(client_fd, INIT_CD, cdMessage);
                 continue;
             }
             move_result = board.move(
@@ -138,6 +140,7 @@ void processCommands(){
                 resetCooldowns();
             }
         }
+        sendMessage(client_fd, RENEW_CD, getPercentage(client_fd));
         if(move_result){
             board.printBoard();
             {
@@ -146,10 +149,9 @@ void processCommands(){
                     sendMessage(i, MOVE, msgString);
                 }
             }
+            std::string s;
         }
         else{
-            // TODO:
-            //  Send board to current fd
             {
                 std::lock_guard<std::mutex> lock(board_lock);
                 sendMessage(client_fd, BOARD_SEND, board.boardToString());
@@ -189,6 +191,7 @@ void startGame(){
     initCooldowns();
     game_running = true;
     board.startGame();
+    std::string cdMessage = getCDAsMessage();
     std::lock_guard<std::mutex> lock(board_lock);
     std::string boardString = board.boardToString();
     {
@@ -196,6 +199,7 @@ void startGame(){
         for(int i : client_fd_list){
             sendMessage(i, BOARD_SEND, boardString);
             sendMessage(i, START, "s");
+            sendMessage(i, INIT_CD, cdMessage);
         }
     }
 }
@@ -207,6 +211,17 @@ void endGame(){
 
 bool gameIsRunning(){
     return game_running;
+}
+
+void updateCD(){
+    if(game_running){
+        std::string cdMessage = getCDAsMessage();
+        std::lock_guard<std::mutex> lock(client_fd_lock);
+        for(int i : client_fd_list){
+            sendMessage(i, INIT_CD, cdMessage);
+            sendMessage(i, RENEW_CD, getPercentage(i));
+        }
+    }
 }
 
 

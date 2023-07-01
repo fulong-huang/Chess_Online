@@ -30,7 +30,6 @@ ChessBoard::ChessBoard(){
 }
 
 bool ChessBoard::stringToBoard(std::vector<char> buffer, int bufferSize){
-    std::cout << "STRING SIZE: " << bufferSize << std::endl;
     if(bufferSize != 74){
         std::cout << "Invalid String Size" << std::endl;
         return false;
