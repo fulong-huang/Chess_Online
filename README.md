@@ -2,9 +2,7 @@
 <br/>
 
 ## Description:
-&emsp;&emsp; Game of Chess, but it's online and weird.
-***
- Features marked with (*) mean it is not implemented yet.
+Game of Chess, but can be played with more than two players.
 * Unlimited amount of players.
 * Anyone can move any piece, as long as the movement is valid.
 * Each move will cost a movement point, whether the movement is valid or not.
