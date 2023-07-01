@@ -8,13 +8,14 @@
 * Unlimited amount of players.
 * Anyone can move any piece, as long as the movement is valid.
 * Each move will cost a movement point, whether the movement is valid or not.
-* Server will set cooldown time and maximum holding movement points.
+* Server can set cooldown time and maximum movement points holding.
 * Only valid moves will be shown on the client side.
 
 ***
  TODO:
-* (*) Server commands while game running, such as set cooldown.
-* (*) User interfaces: Movement points, move history chat, player counts(?).
+* ~~(*) Server commands while game running, such as set cooldown.~~
+* ~~(*) User interface: Movement points~~.
+* (*) User interface: Assign and display team.
 * (*) UI for changing pawn pomotion type (Currently default to Queen).
 * (*) TBD.
 
