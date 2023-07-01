@@ -1,12 +1,14 @@
 #include "client.h"
 
 int client_fd;
+std::string client_name;
 struct sockaddr_in serv_addr;
 
 Game game;
 std::atomic<bool> gameRunning(true);
 
-void initClient(const char* server_addr, int port){
+void initClient(const char* server_addr, int port, const char* name){
+    client_name = name;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
     if((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
@@ -31,6 +33,12 @@ void initClient(const char* server_addr, int port){
     if(result_flagging == -1){
         std::cout << "ERROR SETTING FLAG" << std::endl;
     }
+    if(client_name.size() > 10){
+        client_name = client_name.substr(0, 10);
+    }
+    game.player_name = client_name;
+    std::cout << "CLIENT NAME: " << client_name << std::endl;
+    sendMessage(client_fd, SET_NAME, client_name);
 }
 
 void messageReceiver(){
@@ -53,31 +61,30 @@ void processCommands(){
         if(msg.size() == 0){
             continue;
         }
-        if(msg.size() == 74){
+        Msg command_type = (Msg)msg[msg.size()-1];
+        msg.erase(msg.end() - 1);
+        if(command_type == BOARD_SEND){
             game.stringToBoard(msg, msg.size());
             continue;
         }
-        if(msg.size() == 1){
-            if(msg[0] < 2){
-                game.setWinner(!msg[0]);
-                continue;
-            }
-            if(msg[0] == 's'){
-                game.startGame();
-                continue;
-            }
-            std::cout << "===== UNKNOWN COMMAND ======" << std::endl;
+        if(command_type == END){
+            std::cout << "Winner: " << (int) msg[0] << std::endl;
+            game.setWinner(!msg[0]);
             continue;
         }
-        if(msg.size() == 2){
+        if(command_type == START){
+            game.startGame();
+            continue;
+        }
+        if(command_type == RENEW_CD){
             game.updateServerCD(msg[0]);
             continue;
         }
-        if(msg.size() == 3){
+        if(command_type == INIT_CD){
             game.initCD(msg);
             continue;
         }
-        if(msg.size() == 5){
+        if(command_type == MOVE){
             bool moveResult = game.move(
                         {msg[0] - '0', msg[1] - '0'}, 
                         {msg[2] - '0', msg[3] - '0'}
@@ -85,6 +92,16 @@ void processCommands(){
             if(!moveResult){
                 sendMessage(client_fd, BOARD_REQ, "b");
             }
+        }
+        if(command_type == TEAM_WHITE){
+            std::string message_string(msg.begin(), msg.end());
+            game.addWhiteTeam(message_string);
+            continue;
+        }
+        if(command_type == TEAM_BLACK){
+            std::string message_string(msg.begin(), msg.end());
+            game.addBlackTeam(message_string);
+            continue;
         }
         std::string msgString(msg.begin(), msg.end());
         std::cout << "RECEIVED MESSAGE: " << msgString << std::endl;

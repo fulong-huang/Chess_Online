@@ -28,4 +28,6 @@ bool gameIsRunning();
 
 void updateCD();
 
+void splitTeam();
+
 

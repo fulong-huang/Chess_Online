@@ -59,3 +59,6 @@ Session.vim
 .DS_Store
 
 *.py
+
+test.cpp
+

@@ -4,7 +4,7 @@
 #include <thread>
 
 int main(int argc, const char* argv[]){
-    if(argc != 3){
+    if(argc != 4){
         std::cout << "Invalid number of arguments, \n"
             "\tExpected [Server IP address] and [port]" << std::endl;
         return EXIT_FAILURE;
@@ -19,7 +19,7 @@ int main(int argc, const char* argv[]){
         return EXIT_FAILURE;
     }
 
-    initClient(argv[1], port);
+    initClient(argv[1], port, argv[3]);
     messageSender(CONNECT, "Hello From Client");
 
     std::thread message_receiver(messageReceiver);

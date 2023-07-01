@@ -15,7 +15,7 @@
  TODO:
 * ~~(*) Server commands while game running, such as set cooldown.~~
 * ~~(*) User interface: Movement points~~.
-* (*) User interface: Assign and display team.
+* ~~(*) User interface: Assign and display team~~.
 * (*) UI for changing pawn pomotion type (Currently default to Queen).
 * (*) TBD.
 
@@ -34,8 +34,9 @@
 ```
 &emsp;&emsp; For clients, start the game with:
 ```
-    ./Client <Server IP> <Server Port>
+    ./Client <Server IP> <Server Port> <Player Name>
 ```
+&emsp;&emsp; Not that Player Name will be striped down to 10 characters.
 
 ***
 ## Not Working? Try these:

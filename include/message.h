@@ -12,6 +12,9 @@ enum Msg{
     END,
     INIT_CD,
     RENEW_CD,
+    TEAM_WHITE,
+    TEAM_BLACK,
+    SET_NAME,
 };
 
 void sendMessage(int fd, Msg messageType, std::string message);

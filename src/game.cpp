@@ -16,6 +16,9 @@ Game::Game(){
     this->boardSize = {700, 950};
     this->gridSize = {this->boardSize.x/8.f, this->boardSize.y/8.f};
     this->resizeBoard();
+    this->cd_curr = 0;
+    this->cd_stored = 1;
+    this->cd = 100;
 
     this->textureDisplaySize = 42;
     this->pieceScale = {
@@ -119,6 +122,9 @@ bool Game::move(std::pair<int, int> from, std::pair<int, int> to){
 void Game::startGame(){
     this->clearHistory();
     this->board.startGame();
+    this->team_black.clear();
+    this->team_white.clear();
+    this->cd_curr = 0;
 }
 
 bool Game::handleMouseClick(){
@@ -240,21 +246,85 @@ void Game::display(){
 
     this->window.draw(this->spriteLists[0]);
     this->displaySideBar();
+    this->displayTeams();
 
     this->drawPieces();
     this->displayOverlay();
     this->window.display();
 }
 
+void Game::displayTeams(){
+    this->team_text.setFont(this->font);
+    this->team_text.setFillColor(sf::Color::Black);
+    
+    this->team_text.setString("BLACK");
+    this->team_text.setCharacterSize(50);
+    this->team_text.setPosition(
+            850 - this->team_text.getLocalBounds().width/2,
+            this->team_text.getLocalBounds().height/2
+            );
+    this->window.draw(this->team_text);
+
+    this->team_text.setCharacterSize(30);
+    for(int i = 0; i < team_black.size(); i++){
+        this->team_text.setString(team_black[i]);
+        this->team_text.setPosition(
+                850 - this->team_text.getLocalBounds().width/2,
+                (i * 35) + 80
+                );
+        if(team_black[i].compare(this->player_name) == 0){
+            this->team_text.setFillColor(sf::Color::Green);
+            this->window.draw(this->team_text);
+            this->team_text.setFillColor(sf::Color::Black);
+        }
+        else{
+            this->window.draw(this->team_text);
+        }
+    }
+    this->team_text.setFillColor(sf::Color::White);
+
+    this->team_text.setString("WHITE");
+    this->team_text.setCharacterSize(50);
+    this->team_text.setPosition(
+            850 - this->team_text.getLocalBounds().width/2,
+            1000 - this->team_text.getLocalBounds().height * 2.8
+            );
+    this->window.draw(this->team_text);
+
+    this->team_text.setCharacterSize(30);
+    for(int i = 0; i < team_white.size(); i++){
+        this->team_text.setString(team_white[i]);
+        this->team_text.setPosition(
+                850 - this->team_text.getLocalBounds().width/2,
+                870 - (i * 35)
+                );
+        if(team_white[i].compare(this->player_name) == 0){
+            this->team_text.setFillColor(sf::Color::Green);
+            this->window.draw(this->team_text);
+            this->team_text.setFillColor(sf::Color::White);
+        }
+        else{
+            this->window.draw(this->team_text);
+        }
+    }
+}
+
+void Game::addWhiteTeam(std::string name){
+    this->team_white.push_back(name);
+}
+void Game::addBlackTeam(std::string name){
+    this->team_black.push_back(name);
+}
+
 void Game::displaySideBar(){
 
     sf::RectangleShape r;
-    r.setSize(sf::Vector2f(400, 500));
+    r.setSize(sf::Vector2f(400, 493));
     r.setPosition(700, 0);
     r.setFillColor(sf::Color(135, 70, 5));
     this->window.draw(r);
 
-    r.setPosition(700, 500);
+    r.setPosition(700, 507);
     r.setFillColor(sf::Color(215, 115, 5));
     this->window.draw(r);
     r.setSize(sf::Vector2f(10, 1000));
@@ -593,6 +663,12 @@ void Game::initText(){
 //    this->restartText.setPosition(this->gridSize.x * 1.5 + 16, 
 //                                    this->gridSize.y * 5);
 //    this->restartText.setFillColor(sf::Color::Black);
+}
+
+void Game::setTeam(std::vector<char> members, bool white){
+    if(white){
+
+    }
 }
 
 bool Game::stringToBoard(std::vector<char> buffer, int bufferSize){

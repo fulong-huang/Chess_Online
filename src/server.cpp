@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <server.h>
 
 ChessBoard board;
@@ -12,8 +13,29 @@ struct sockaddr_in address;
 std::vector<int> client_fd_list;
 std::vector<int> teamBlack, teamWhite;
 
+std::map<int, std::string> client_names;
+
 std::mutex client_fd_lock;
 std::mutex board_lock;
+
+void splitTeam(){
+    teamBlack.clear(); 
+    teamWhite.clear();
+    std::lock_guard<std::mutex> lock(client_fd_lock);
+    std::vector<int> tempClient = client_fd_list;
+    bool b;
+    while(!tempClient.empty()){
+        int randomIdx = std::rand() % tempClient.size();
+        if(b){
+            teamBlack.push_back(tempClient[randomIdx]);
+        }
+        else{
+            teamWhite.push_back(tempClient[randomIdx]);
+        }
+        b = !b;
+        tempClient.erase(tempClient.begin() + randomIdx);
+    }
+}
 
 void initServer(int port){
     server_running = true;
@@ -94,29 +116,33 @@ void processCommands(){
         if(msg.size() == 0){
             continue;
         }
-        std::string msgString(msg.begin(), msg.end());
+        std::string msgString(msg.begin(), msg.end() - 1);
         std::cout << "Received message: " << msgString << std::endl;
         
         char promote = QUEEN;
-        if(msg.size() == 5){
+        Msg command_type = (Msg)msg[msg.size()-1];
+        if(command_type == MOVE){
             promote = msg[4];
         }
-        else if(msg.size() == 1){
+        else if(command_type == BOARD_REQ){
             std::lock_guard<std::mutex> lock(board_lock);
             sendMessage(client_fd, BOARD_SEND, board.boardToString());
             std::cout << "SEND BOARD" << std::endl;
             continue;
         }
-        else if(msg.size() == 17){
+        else if(command_type == CONNECT){
             std::cout << "CLIENT CONNECTION MESSAGE" << std::endl;
             continue;
+        }
+        else if(command_type == SET_NAME){
+            client_names[client_fd] = msgString;
         }
         else{
             std::cout << "Invalid message length" << std::endl;
             continue;
         }
         if(!game_running) continue;
-        bool move_result;
+        bool move_result, whiteTurn = board.isWhiteTurn();
         {
             std::chrono::steady_clock::time_point curr_time =
                 std::chrono::steady_clock::now();
@@ -131,14 +157,6 @@ void processCommands(){
                         {msg[0] - '0', msg[1] - '0'}, 
                         {msg[2] - '0', msg[3] - '0'}
                     );
-            std::cout << "Client move result: " << move_result << std::endl;
-            if(!board.gameIsRunning()){
-                std::string s;
-                s += board.isWhiteTurn();
-                sendMessage(client_fd, END, s);
-                board.resetBoard();
-                resetCooldowns();
-            }
         }
         sendMessage(client_fd, RENEW_CD, getPercentage(client_fd));
         if(move_result){
@@ -147,6 +165,16 @@ void processCommands(){
                 std::lock_guard<std::mutex> lock(client_fd_lock);
                 for(int i : client_fd_list){
                     sendMessage(i, MOVE, msgString);
+                }
+                if(!board.gameIsRunning()){
+                    std::lock_guard<std::mutex> lock(board_lock);
+                    std::string s;
+                    s += !whiteTurn;
+                    for(int i : client_fd_list){
+                        sendMessage(i, END, s);
+                    }
+                    board.resetBoard();
+                    resetCooldowns();
                 }
             }
             std::string s;
@@ -189,6 +217,7 @@ void closeServer(){
 
 void startGame(){
     initCooldowns();
+    splitTeam();
     game_running = true;
     board.startGame();
     std::string cdMessage = getCDAsMessage();
@@ -200,6 +229,12 @@ void startGame(){
             sendMessage(i, BOARD_SEND, boardString);
             sendMessage(i, START, "s");
             sendMessage(i, INIT_CD, cdMessage);
+            for(int k : teamWhite){
+                sendMessage(i, TEAM_WHITE, client_names[k]);
+            }
+            for(int k : teamBlack){
+                sendMessage(i, TEAM_BLACK, client_names[k]);
+            }
         }
     }
 }

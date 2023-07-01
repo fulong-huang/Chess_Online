@@ -8,6 +8,12 @@ std::mutex queue_lock;
 std::queue<std::pair<int, std::vector<char>>> message_queue;
 
 void sendMessage(int fd, Msg messageType, std::string message){
+    if(messageType == SET_NAME || 
+            messageType == TEAM_WHITE || messageType == TEAM_BLACK){
+        std::string size;
+        size += message.size();
+        message = size + message;
+    }
     char buffer[message.size() + 1];
     buffer[0] = messageType;
     message.copy(buffer + 1, message.size());
@@ -24,6 +30,7 @@ bool receiveMessage(int fd){
         std::cout << "Client Disconnected" << std::endl;
         return false;
     }
+    Msg type = (Msg)buffer[0];
     switch(buffer[0]){
         case CONNECT:
             byteRead = 17;
@@ -49,12 +56,29 @@ bool receiveMessage(int fd){
         case RENEW_CD:
             byteRead = 2;
             break;
+        case TEAM_WHITE:
+        case TEAM_BLACK:
+            byteRead = read(fd, buffer, 1);
+            if(byteRead <= 0){
+                std::cout << "========= UNKNOWN ERROR =========" << std::endl;
+                return false;
+            }
+            byteRead = buffer[0];
+            break;
+        case SET_NAME:
+            byteRead = read(fd, buffer, 1);
+            if(byteRead <= 0){
+                std::cout << "========= UNKNOWN ERROR =========" << std::endl;
+                return false;
+            }
+            byteRead = buffer[0];
+            break;
         default:
             byteRead = 128;
             std::cout << "======UNKNOWN COMMAND======" << std::endl;
             std::cout << "======Clearing Pending Messages======" << std::endl;
-            while(byteRead == 128){
-                byteRead = read(fd, buffer, 128);
+            while(byteRead == 127){
+                byteRead = read(fd, buffer, 127);
             }
             return true;
     }
@@ -63,9 +87,10 @@ bool receiveMessage(int fd){
         std::cout << "========= UNKNOWN ERROR =========" << std::endl;
         return false;
     }
-    buffer[byteRead] = 0;
+    buffer[byteRead] = type;
+    buffer[byteRead + 1] = 0;
 
-    std::vector<char> data(buffer, buffer + byteRead);
+    std::vector<char> data(buffer, buffer + byteRead + 1);
     std::lock_guard<std::mutex> lock(queue_lock);
     message_queue.push({fd, data});
     return true;

@@ -14,6 +14,8 @@ public:
     std::pair<int, int> savedFrom;
     std::pair<int, int> savedTo;
 
+    std::string player_name;
+
     Game();
     void display();
     void resizeBoard();
@@ -32,6 +34,10 @@ public:
     void initCD(std::vector<char> msg);
     void updateCurrCD(int amount);
     void updateServerCD(int percent);
+
+    void setTeam(std::vector<char> members, bool white);
+    void addWhiteTeam(std::string name);
+    void addBlackTeam(std::string name);
 
 private:
     struct PastMoves{
@@ -76,6 +82,7 @@ private:
     sf::Font font;
     sf::Text overlayText;
     sf::Text overlaySmallText;
+    sf::Text team_text;
 
     int textureDisplaySize;
     bool whiteTurn;
@@ -90,6 +97,9 @@ private:
     int cd; // cooldown time
     int cd_curr; // current progress
     int cd_stored;  // Total holding amount
+    
+    std::vector<std::string> team_black, team_white;
+    void displayTeams();
 
     std::pair<float, float> padding;
     sf::Vector2f boardSize;
