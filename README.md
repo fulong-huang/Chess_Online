@@ -34,7 +34,7 @@ Game of Chess, but can be played with more than two players.
 ```
     ./Client <Server IP> <Server Port> <Player Name>
 ```
-&emsp;&emsp; Not that Player Name will be striped down to 10 characters.
+&emsp;&emsp; Note that Player Name will be striped down to 10 characters.
 
 ***
 ## Not Working? Try these:
