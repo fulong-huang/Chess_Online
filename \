@@ -319,12 +319,12 @@ void Game::addBlackTeam(std::string name){
 void Game::displaySideBar(){
 
     sf::RectangleShape r;
-    r.setSize(sf::Vector2f(400, 446));
+    r.setSize(sf::Vector2f(400, 457.5));
     r.setPosition(700, 0);
     r.setFillColor(sf::Color(135, 70, 5));
     this->window.draw(r);
 
-    r.setPosition(700, 554);
+    r.setPosition(700, 542.5);
     r.setFillColor(sf::Color(215, 115, 5));
     this->window.draw(r);
     r.setSize(sf::Vector2f(10, 1000));
@@ -361,31 +361,34 @@ void Game::displaySideBar(){
     this->window.draw(r);
 
     // promotion pieces [13 - 16]
-    sf::Color c;
-    c = sf::Color(128, 128, 128);
-    r.setFillColor(c);
+    r.setPosition(710, 457.5);
+    r.setFillColor(sf::Color::Magenta);
     r.setSize(sf::Vector2f((65.f),(65.f * 950/700.f )));
+    this->window.draw(r);
+
+    r.setPosition(785, 457.5);
+    r.setFillColor(sf::Color::Magenta);
+    r.setSize(sf::Vector2f((65.f),(65.f * 950/700.f )));
+    this->window.draw(r);
 
     r.setPosition(710, 457.5);
+    r.setFillColor(sf::Color::Magenta);
+    r.setSize(sf::Vector2f((65.f),(65.f * 950/700.f )));
     this->window.draw(r);
-    r.setPosition(785, 457.5);
-    this->window.draw(r);
-    r.setPosition(860, 457.5);
-    this->window.draw(r);
-    c = sf::Color::Green;
-    c.a = 128;
-    r.setFillColor(c);
-    r.setPosition(935, 457.5);
+
+    r.setPosition(710, 457.5);
+    r.setFillColor(sf::Color::Magenta);
+    r.setSize(sf::Vector2f((65.f),(65.f * 950/700.f )));
     this->window.draw(r);
 
     this->spriteLists[13].setPosition(715, 460);
     this->window.draw(this->spriteLists[13]);
-    this->spriteLists[14].setPosition(790, 460);
-    this->window.draw(this->spriteLists[14]);
-    this->spriteLists[15].setPosition(865, 460);
-    this->window.draw(this->spriteLists[15]);
-    this->spriteLists[16].setPosition(940, 460);
-    this->window.draw(this->spriteLists[16]);
+    this->spriteLists[13].setPosition(795.5, 460);
+    this->window.draw(this->spriteLists[13]);
+    this->spriteLists[13].setPosition(876, 460);
+    this->window.draw(this->spriteLists[13]);
+    this->spriteLists[13].setPosition(956.f, 460);
+    this->window.draw(this->spriteLists[13]);
 
 }
 

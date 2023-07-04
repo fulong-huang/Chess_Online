@@ -65,6 +65,10 @@ private:
     sf::Texture wbishopTexture;
     sf::Texture wqueenTexture;
     sf::Texture wkingTexture;
+    sf::Texture pqueenTexture;
+    sf::Texture pknightTexture;
+    sf::Texture prookTexture;
+    sf::Texture pbishopTexture;
 
     sf::Sprite background;
     sf::Sprite pawnSprite;
@@ -79,6 +83,11 @@ private:
     sf::Sprite wbishopSprite;
     sf::Sprite wqueenSprite;
     sf::Sprite wkingSprite;
+    sf::Sprite pqueenSprite;
+    sf::Sprite pknightSprite;
+    sf::Sprite prookSprite;
+    sf::Sprite pbishopSprite;
+
     sf::Font font;
     sf::Text overlayText;
     sf::Text overlaySmallText;
