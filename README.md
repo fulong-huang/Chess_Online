@@ -1,21 +1,15 @@
-# Chess_Online [In Process]
+# Chess_Online
 <br/>
 
 ## Description:
 Game of Chess, but can be played with more than two players.
-* Unlimited amount of players.
-* Anyone can move any piece, as long as the movement is valid.
+* Unlimited amount of (recommanded <= 10 to avoid visual bugs) players.
 * Each move will cost a movement point, whether the movement is valid or not.
-* Server can set cooldown time and maximum movement points holding.
-* Only valid moves will be shown on the client side.
-
-***
- TODO:
-* ~~(*) Server commands while game running, such as set cooldown.~~
-* ~~(*) User interface: Movement points~~.
-* ~~(*) User interface: Assign and display team~~.
-* (*) UI for changing pawn pomotion type (Currently default to Queen).
-* (*) TBD.
+* Anyone can move any piece, as long as the movement is valid.
+* Server can set cooldown time and maximum movement points of players.
+* Only valid moves will be shown on the client side UI.
+* Client can command lines to move, or request board if out of sync.
+* Client need to select pawn promotion type before movement was placed.
 
 ## How to RUN:  (Game not complete, likely will not function as expected)
 &emsp;&emsp; Running the following command from the root directory to target CMAKE build directory:
