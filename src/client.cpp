@@ -112,6 +112,11 @@ void processCommands(){
 void runGame(){
     std::chrono::steady_clock::time_point prev_time, curr_time;
     prev_time = std::chrono::steady_clock::now();
+
+    int flag = fcntl(0, F_GETFL, 0);
+    fcntl(0, F_SETFL, flag | O_NONBLOCK);
+    char commandRead[128];
+    
     while(gameRunning){
         // Update times
         curr_time = std::chrono::steady_clock::now();
@@ -148,6 +153,25 @@ void runGame(){
                     break;
             }
         }
+        int readLen = read(0, commandRead, 50);
+        if(readLen > 0){
+            std::cout << "LEN " << std::endl;
+            if(readLen == 2 && commandRead[0] == 'b'){
+                sendMessage(client_fd, BOARD_REQ, "b");
+            }
+            else if(readLen == 5){
+                commandRead[4] = 0;
+                sendMessage(client_fd, MOVE, std::string(commandRead, 5));
+            }
+            else if(readLen == 6){
+                commandRead[4] -= '0';
+                sendMessage(client_fd, MOVE, std::string(commandRead, 5));
+            }
+            else{
+                std::cout << "INVALID COMMAND" << std::endl;
+            }
+        }
+
         game.display();
     }
     std::cout << "Game end" << std::endl;

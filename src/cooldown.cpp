@@ -27,9 +27,6 @@ std::string getPercentage(int fd){
     if(saved_time > maxSavedTime){
         saved_time = maxSavedTime;
     }
-    if(saved_time >= cooldown){
-        saved_time -= cooldown;
-    }
     client_cooldowns[fd] = {curr_time, saved_time};
 
     std::string result;
@@ -69,7 +66,6 @@ std::string getCDAsMessage(){
     result[0] = cooldown / 255;
     result[1] = cooldown % 255;
     result[2] = maxMoves;
-    std::cout << cooldown << ", " << maxMoves << std::endl;
     return result;
 }
 
