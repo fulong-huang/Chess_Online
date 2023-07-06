@@ -16,10 +16,14 @@ public:
 
     std::string player_name;
 
+    int selected_promotion;
+
     Game();
     void display();
     void resizeBoard();
-    bool move(std::pair<int, int> from, std::pair<int, int> to);
+    bool move(std::pair<int, int> from,
+            std::pair<int, int> to,
+            char piece = QUEEN);
     bool handleMouseClick();
     std::pair<int, int> moveFrom;
     std::pair<int, int> moveTo;

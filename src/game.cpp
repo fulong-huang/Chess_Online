@@ -19,6 +19,7 @@ Game::Game(){
     this->cd_curr = 0;
     this->cd_stored = 1;
     this->cd = 100;
+    this->selected_promotion = 0;
 
     this->textureDisplaySize = 42;
     this->pieceScale = {
@@ -90,8 +91,10 @@ void Game::clearHistory(){
 }
 
 // Check for return value, if value incorrect, request for new board.
-bool Game::move(std::pair<int, int> from, std::pair<int, int> to){
-    if(this->board.move(from, to)){
+bool Game::move(std::pair<int, int> from,
+        std::pair<int, int> to, 
+        char piece){
+    if(this->board.move(from, to, piece)){
         PastMoves* currMove = new struct PastMoves();
         currMove->next = moves_front;
         currMove->prev = NULL;
@@ -134,7 +137,23 @@ bool Game::handleMouseClick(){
     }
     sf::Vector2f mousePos = this->window.mapPixelToCoords(sf::Mouse::getPosition(this->window));
     if(mousePos.x < 0 || mousePos.y < 0 || 
-            mousePos.x > this->boardSize.x || mousePos.y > this->boardSize.y){
+            mousePos.x >= 1000 || mousePos.y > this->boardSize.y){
+        this->validTargets = {};
+        this->moveFrom = {-1, -1};
+        this->promotion = false;
+        return false;
+    }
+    if(mousePos.x > this->boardSize.x ){
+        if(mousePos.y <= 556 && mousePos.y >= 467){
+            for(int i = 0; i < 4; i++){
+                int startPos = 710 + i * 75;
+                if(mousePos.x >= startPos &&
+                        mousePos.x <= startPos + 65){
+                    this->selected_promotion = i;
+                    return false;
+                }
+            }
+        }
         this->validTargets = {};
         this->moveFrom = {-1, -1};
         this->promotion = false;
@@ -362,29 +381,28 @@ void Game::displaySideBar(){
 
     // promotion pieces [13 - 16]
     sf::Color c;
-    c = sf::Color(128, 128, 128);
-    r.setFillColor(c);
     r.setSize(sf::Vector2f((65.f),(65.f * 950/700.f )));
 
-    r.setPosition(710, 457.5);
-    this->window.draw(r);
-    r.setPosition(785, 457.5);
-    this->window.draw(r);
-    r.setPosition(860, 457.5);
-    this->window.draw(r);
-    c = sf::Color::Green;
-    c.a = 128;
-    r.setFillColor(c);
-    r.setPosition(935, 457.5);
-    this->window.draw(r);
+    for(int i = 0; i < 4; i ++){
+        if(this->selected_promotion == i){
+            c = sf::Color::Green;
+            c.a = 128;
+        }
+        else{
+            c = sf::Color(128, 128, 128);
+        }
+        r.setFillColor(c);
+        r.setPosition(710 + i * 75, 457.5);
+        this->window.draw(r);
+    }
 
-    this->spriteLists[13].setPosition(715, 460);
+    this->spriteLists[13].setPosition(715, 462.5);
     this->window.draw(this->spriteLists[13]);
-    this->spriteLists[14].setPosition(790, 460);
+    this->spriteLists[14].setPosition(790, 462.5);
     this->window.draw(this->spriteLists[14]);
-    this->spriteLists[15].setPosition(865, 460);
+    this->spriteLists[15].setPosition(865, 462.5);
     this->window.draw(this->spriteLists[15]);
-    this->spriteLists[16].setPosition(940, 460);
+    this->spriteLists[16].setPosition(940, 462.5);
     this->window.draw(this->spriteLists[16]);
 
 }
@@ -593,7 +611,7 @@ void Game::initTextures(){
         wpawnTexture, wrookTexture, wknightTexture, 
         wbishopTexture, wqueenTexture, wkingTexture,
 
-        pqueenTexture, prookTexture, pknightTexture, pbishopTexture,
+        pqueenTexture, pbishopTexture, pknightTexture, prookTexture,
     };
 
     if(!this->font.loadFromFile(srcDir + "Silkscreen/slkscre.ttf")){

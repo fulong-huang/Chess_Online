@@ -117,7 +117,7 @@ void processCommands(){
             continue;
         }
         std::string msgString(msg.begin(), msg.end() - 1);
-        std::cout << "Received message: " << msgString << std::endl;
+        std::cout << "Received message: " << msgString << ";"<< std::endl;
         
         char promote = QUEEN;
         Msg command_type = (Msg)msg[msg.size()-1];
@@ -155,7 +155,8 @@ void processCommands(){
             }
             move_result = board.move(
                         {msg[0] - '0', msg[1] - '0'}, 
-                        {msg[2] - '0', msg[3] - '0'}
+                        {msg[2] - '0', msg[3] - '0'},
+                        msg[4]
                     );
         }
         sendMessage(client_fd, RENEW_CD, getPercentage(client_fd));

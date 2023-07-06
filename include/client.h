@@ -13,6 +13,8 @@ void messageSender(Msg messageType, std::string msg);
 void processCommands();
 
 void runGame();
-std::string combinePositions(std::pair<int, int> from, std::pair<int, int> to);
+std::string combinePositions(std::pair<int, int> from,
+        std::pair<int, int> to,
+        int piece = 0);
 
 

@@ -87,7 +87,8 @@ void processCommands(){
         if(command_type == MOVE){
             bool moveResult = game.move(
                         {msg[0] - '0', msg[1] - '0'}, 
-                        {msg[2] - '0', msg[3] - '0'}
+                        {msg[2] - '0', msg[3] - '0'},
+                        msg[4]
                     );
             if(!moveResult){
                 sendMessage(client_fd, BOARD_REQ, "b");
@@ -136,7 +137,9 @@ void runGame(){
                         bool success = game.handleMouseClick();
                         if(success){
                             std::string msg = 
-                                combinePositions(game.savedFrom, game.savedTo);
+                                combinePositions(game.savedFrom,
+                                        game.savedTo, 
+                                        game.selected_promotion);
                             sendMessage(client_fd, MOVE, msg);
                             game.moveFrom.first = -1;
                         }
@@ -151,13 +154,16 @@ void runGame(){
 
 }
 
-std::string combinePositions(std::pair<int, int> from, std::pair<int, int> to){
+std::string combinePositions(std::pair<int, int> from,
+        std::pair<int, int> to,
+        int piece){
     std::string result;
     result += (from.first + '0');
     result += (from.second + '0');
     result += (to.first + '0');
     result += (to.second + '0');
-    result += QUEEN;
+
+    result += (5 - piece);
 
     return result;
 }
