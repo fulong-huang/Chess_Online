@@ -11,7 +11,7 @@ Game of Chess, but can be played with more than two players.
 * Client can command lines to move, or request board if out of sync.
 * Client need to select pawn promotion type before movement was placed.
 
-## How to RUN:  (Game not complete, likely will not function as expected)
+## How to RUN: 
 &emsp;&emsp; Running the following command from the root directory to target CMAKE build directory:
 ```
     cmake -S . -B <Target Build Directory>
