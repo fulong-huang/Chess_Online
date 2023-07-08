@@ -1,4 +1,4 @@
-# Chess_Online
+# Chess_Online (MacOS)
 <br/>
 
 ## Description:
@@ -24,6 +24,8 @@ Game of Chess, but can be played with more than two players.
 ```
     ./Server <Port Number>
 ```
+&emsp;&emsp; Then use ```cooldown <time>``` to set cooldown (ms), ```move <count>``` to set moves player can hold, or ```start``` to start game.
+
 &emsp;&emsp; For clients, start the game with:
 ```
     ./Client <Server IP> <Server Port> <Player Name>
