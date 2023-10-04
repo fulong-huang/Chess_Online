@@ -60,6 +60,12 @@ void initServer(int port){
     }
 }
 
+void sendBoard(int client_socket){
+    std::lock_guard<std::mutex> lock(board_lock);
+    sendMessage(client_socket, BOARD_SEND, board.boardToString());
+    std::cout << "SEND BOARD" << std::endl;
+}
+
 void acceptClient(){
     struct timeval timeout;
     fd_set readSet;
@@ -163,6 +169,7 @@ void processCommands(){
         if(move_result){
             board.printBoard();
             {
+                // disallow new client to connect
                 std::lock_guard<std::mutex> lock(client_fd_lock);
                 for(int i : client_fd_list){
                     sendMessage(i, MOVE, msgString);

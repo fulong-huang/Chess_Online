@@ -29,5 +29,6 @@ bool gameIsRunning();
 void updateCD();
 
 void splitTeam();
-
+void sendBoard(int client_fd);
+void endGame(bool whiteTurn);
 
