@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <client.h>
-#include <thread>
+#include <SFML/System/Thread.hpp>
 
 int main(int argc, const char* argv[]){
     if(argc != 4){
@@ -22,13 +22,17 @@ int main(int argc, const char* argv[]){
     initClient(argv[1], port, argv[3]);
     messageSender(CONNECT, "Hello From Client");
 
-    std::thread message_receiver(messageReceiver);
-    std::thread command_processor(processCommands);
+	sf::Thread message_receiver(messageReceiver);
+    sf::Thread command_processor(processCommands);
+
+	message_receiver.launch();
+	command_processor.launch();
 
     runGame();
+	std::cout << "RUNNED GAME ===" << std::endl;
 
-    message_receiver.join();
-    command_processor.join();
+    message_receiver.wait();
+    command_processor.wait();
 
     return 0;
 }

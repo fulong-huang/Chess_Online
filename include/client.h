@@ -1,11 +1,12 @@
 #include <iostream>
-#include <arpa/inet.h>
+//#include <arpa/inet.h>
 #include <stdio.h>
-#include <sys/socket.h>
-#include <unistd.h>
+//#include <sys/socket.h>
+//#include <unistd.h>
 #include <message.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 #include <game.h>
+#include <SFML/Network.hpp>
 
 void initClient(const char* server_ip, int port, const char* name);
 void messageReceiver();

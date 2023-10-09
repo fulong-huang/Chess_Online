@@ -1,56 +1,69 @@
 #include "client.h"
 
-int client_fd;
+sf::TcpSocket client_socket;
 std::string client_name;
-struct sockaddr_in serv_addr;
+//struct sockaddr_in serv_addr;
 
 Game game;
 std::atomic<bool> gameRunning(true);
 
 void initClient(const char* server_addr, int port, const char* name){
     client_name = name;
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(port);
-    if((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-        std::cout << "SOCKET Creation Error" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    if(inet_pton(AF_INET, server_addr, &serv_addr.sin_addr) <= 0){
-        std::cout << "Invalid address " << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    if(connect(client_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
-        std::cout << "Connection Failed" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    
-    int flags = fcntl(client_fd, F_GETFL, 0);
-    if(flags == -1){
-        std::cout << "-1 flags" << std::endl;
-    }
-    flags |= O_NONBLOCK;
-    int result_flagging = fcntl(client_fd, F_SETFL, flags);
-    if(result_flagging == -1){
-        std::cout << "ERROR SETTING FLAG" << std::endl;
-    }
-    if(client_name.size() > 10){
-        client_name = client_name.substr(0, 10);
-    }
-    game.player_name = client_name;
-    std::cout << "CLIENT NAME: " << client_name << std::endl;
-    sendMessage(client_fd, SET_NAME, client_name);
+	sf::Socket::Status status = client_socket.connect(server_addr, port);
+	if(status != sf::Socket::Done){
+		std::cout << "SOCKET CONNECTION ERROR" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	game.player_name = client_name;
+	sendMessage(&client_socket, SET_NAME, client_name);
+//	char data[4] = {SET_NAME, 10, 'F', 'i'};
+//	std::cout << "CLIENT NAME: " << client_name << std::endl;
+//	if(client_socket.send(data, 4) != sf::Socket::Done){
+//		std::cout << "SOCKET SEND ERROR" << std::endl;
+//		exit(EXIT_FAILURE);
+//	}
+ //   serv_addr.sin_family = AF_INET;
+ //   serv_addr.sin_port = htons(port);
+ //   if((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+ //       std::cout << "SOCKET Creation Error" << std::endl;
+ //       exit(EXIT_FAILURE);
+ //   }
+ //   if(inet_pton(AF_INET, server_addr, &serv_addr.sin_addr) <= 0){
+ //       std::cout << "Invalid address " << std::endl;
+ //       exit(EXIT_FAILURE);
+ //   }
+ //   if(connect(client_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
+ //       std::cout << "Connection Failed" << std::endl;
+ //       exit(EXIT_FAILURE);
+ //   }
+ //   
+ //   int flags = fcntl(client_fd, F_GETFL, 0);
+ //   if(flags == -1){
+ //       std::cout << "-1 flags" << std::endl;
+ //   }
+ //   flags |= O_NONBLOCK;
+ //   int result_flagging = fcntl(client_fd, F_SETFL, flags);
+ //   if(result_flagging == -1){
+ //       std::cout << "ERROR SETTING FLAG" << std::endl;
+ //   }
+ //   if(client_name.size() > 10){
+ //       client_name = client_name.substr(0, 10);
+ //   }
+ //   game.player_name = client_name;
+ //   std::cout << "CLIENT NAME: " << client_name << std::endl;
+ //   sendMessage(client_fd, SET_NAME, client_name);
 }
 
 void messageReceiver(){
-    while(receiveMessage(client_fd) && gameRunning){
+    while(receiveMessage(&client_socket) && gameRunning){
     }
     std::cout << "MESSAGE RECEIVER ENDED" << std::endl;
-    close(client_fd);
+    // close(client_fd);
     gameRunning = false;
 }
 
 void messageSender(Msg messageType, std::string msg){
-    sendMessage(client_fd, messageType, msg);
+    sendMessage(&client_socket, messageType, msg);
 }
 
 void processCommands(){
@@ -91,7 +104,7 @@ void processCommands(){
                         msg[4]
                     );
             if(!moveResult){
-                sendMessage(client_fd, BOARD_REQ, "b");
+                sendMessage(&client_socket, BOARD_REQ, "b");
             }
         }
         if(command_type == TEAM_WHITE){
@@ -113,8 +126,8 @@ void runGame(){
     std::chrono::steady_clock::time_point prev_time, curr_time;
     prev_time = std::chrono::steady_clock::now();
 
-    int flag = fcntl(0, F_GETFL, 0);
-    fcntl(0, F_SETFL, flag | O_NONBLOCK);
+//    int flag = fcntl(0, F_GETFL, 0);
+//    fcntl(0, F_SETFL, flag | O_NONBLOCK);
     char commandRead[128];
     
     while(gameRunning){
@@ -145,7 +158,7 @@ void runGame(){
                                 combinePositions(game.savedFrom,
                                         game.savedTo, 
                                         game.selected_promotion);
-                            sendMessage(client_fd, MOVE, msg);
+                            sendMessage(&client_socket, MOVE, msg);
                             game.moveFrom.first = -1;
                         }
                     }
@@ -153,25 +166,25 @@ void runGame(){
                     break;
             }
         }
-        int readLen = read(0, commandRead, 50);
-        if(readLen > 0){
-            std::cout << "LEN " << std::endl;
-            if(readLen == 2 && commandRead[0] == 'b'){
-                sendMessage(client_fd, BOARD_REQ, "b");
-            }
-            else if(readLen == 5){
-                commandRead[4] = 0;
-                sendMessage(client_fd, MOVE, std::string(commandRead, 5));
-            }
-            else if(readLen == 6){
-                commandRead[4] -= '0';
-                sendMessage(client_fd, MOVE, std::string(commandRead, 5));
-            }
-            else{
-                std::cout << "INVALID COMMAND" << std::endl;
-            }
-        }
-
+//        int readLen = read(0, commandRead, 50);
+//        if(readLen > 0){
+//            std::cout << "LEN " << std::endl;
+//            if(readLen == 2 && commandRead[0] == 'b'){
+//                sendMessage(&client_socket, BOARD_REQ, "b");
+//            }
+//            else if(readLen == 5){
+//                commandRead[4] = 0;
+//                sendMessage(&client_socket, MOVE, std::string(commandRead, 5));
+//            }
+//            else if(readLen == 6){
+//                commandRead[4] -= '0';
+//                sendMessage(&client_socket, MOVE, std::string(commandRead, 5));
+//            }
+//            else{
+//                std::cout << "INVALID COMMAND" << std::endl;
+//            }
+//        }
+//
         game.display();
     }
     std::cout << "Game end" << std::endl;

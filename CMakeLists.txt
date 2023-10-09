@@ -22,7 +22,7 @@ if(NOT sfml_POPULATED)
     add_subdirectory(${sfml_SOURCE_DIR} ${sfml_BINARY_DIR})
 endif()
 
-find_package(SFML ${SFML_VERSION} COMPONENTS system window graphics)
+find_package(SFML ${SFML_VERSION} COMPONENTS system window graphics network)
 
 include_directories(test include)
 
@@ -42,7 +42,8 @@ add_executable(Client
     src/message.cpp
 )
 
-target_link_libraries (Client sfml-graphics sfml-window sfml-system)
+target_link_libraries (Server sfml-system sfml-network)
+target_link_libraries (Client sfml-graphics sfml-window sfml-system sfml-network)
 
 
 
