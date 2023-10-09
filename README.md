@@ -32,7 +32,7 @@ Game of Chess, but can be played with more than two players.
 ```
 &emsp;&emsp; Note that Player Name will be striped down to 10 characters.
 
-## Argument unused during compilation?
+## "Argument unused" during compilation?
 &emsp;&emsp; Try go into ```<build directory>/_deps/sfml_src/cmake/Macros.cmake```, in line 27 and 28, remove ```"-stdlib=libc++"```. Now save the file and try again.
 <br><br>
 &emsp;&emsp; Line 27 and 28 should be:
@@ -42,7 +42,7 @@ target_link_libraries(${target} PRIVATE)
 ```
 
 ***
-## Not Working? Try these:
+## Other issues? Try these:
 * Server IP should be the public IP address from the server side (unless running locally).<br/>
 * Make sure cmake was installed, and included in environment variables. <br/>
 * Make sure the port was open and available, might need to forward the port to the server machine.<br/>
