@@ -1,22 +1,25 @@
 #include <iostream>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <atomic>
-#include <sys/select.h>
-#include <unistd.h>
+// #include <netinet/in.h>
+// #include <sys/socket.h>
+// #include <atomic>
+// #include <sys/select.h>
+// #include <unistd.h>
 #include <vector>
-#include <mutex>
-#include <fcntl.h>
+// #include <mutex>
+// #include <fcntl.h>
 #include <board.h>
-#include <thread>
+// #include <thread>
 #include <message.h>
 #include <cooldown.h>
+#include <SFML/System.hpp>
+#include <SFML/Network.hpp>
 
 void initServer(int port);
 void resetCooldowns();
 
 void acceptClient();
-void clientHandler(int client_socket);
+void clientHandler(sf::TcpSocket* client_socket);
+void readCommands();
 void processCommands();
 
 void stopServer();
@@ -29,6 +32,6 @@ bool gameIsRunning();
 void updateCD();
 
 void splitTeam();
-void sendBoard(int client_fd);
+void sendBoard(sf::TcpSocket* client_fd);
 void endGame(bool whiteTurn);
 

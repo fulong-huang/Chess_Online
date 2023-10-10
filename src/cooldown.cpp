@@ -1,16 +1,14 @@
 #include <cooldown.h>
 
-// key:     client_fd
-// value:   time from last command, exceed time after command
 std::map<
-    int, 
+    sf::TcpSocket*, 
     std::pair<std::chrono::steady_clock::time_point, float>
     > client_cooldowns;
 int cooldown = 2000;
 int maxMoves = 3;
 
-std::string getPercentage(int fd){
-    if(client_cooldowns.find(fd) == client_cooldowns.end()){
+std::string getPercentage(sf::TcpSocket* soc){
+    if(client_cooldowns.find(soc) == client_cooldowns.end()){
         return "00";
     }
     float saved_time;
@@ -18,7 +16,7 @@ std::string getPercentage(int fd){
     std::chrono::steady_clock::time_point curr_time = 
         std::chrono::steady_clock::now();
 
-    std::tie(past_time, saved_time) = client_cooldowns[fd];
+    std::tie(past_time, saved_time) = client_cooldowns[soc];
     saved_time += 
         std::chrono::duration_cast<std::chrono::milliseconds>(
                 curr_time - past_time
@@ -27,7 +25,7 @@ std::string getPercentage(int fd){
     if(saved_time > maxSavedTime){
         saved_time = maxSavedTime;
     }
-    client_cooldowns[fd] = {curr_time, saved_time};
+    client_cooldowns[soc] = {curr_time, saved_time};
 
     std::string result;
     result += (int)((saved_time / (cooldown * maxMoves)) * 127);
@@ -35,15 +33,15 @@ std::string getPercentage(int fd){
     return result;
 }
 
-bool updateCooldown(std::chrono::steady_clock::time_point curr_time, int fd){
+bool updateCooldown(std::chrono::steady_clock::time_point curr_time, sf::TcpSocket* soc){
     bool result = false;
-    if(client_cooldowns.find(fd) == client_cooldowns.end()){
-        client_cooldowns[fd] = {curr_time, 0};
+    if(client_cooldowns.find(soc) == client_cooldowns.end()){
+        client_cooldowns[soc] = {curr_time, 0};
     }
     else{
         std::chrono::steady_clock::time_point past_time;
         float saved_time;
-        std::tie(past_time, saved_time) = client_cooldowns[fd];
+        std::tie(past_time, saved_time) = client_cooldowns[soc];
         saved_time += 
             std::chrono::duration_cast<std::chrono::milliseconds>(
                     curr_time - past_time
@@ -56,7 +54,7 @@ bool updateCooldown(std::chrono::steady_clock::time_point curr_time, int fd){
             saved_time -= cooldown;
             result = true;
         }
-        client_cooldowns[fd] = {curr_time, saved_time};
+        client_cooldowns[soc] = {curr_time, saved_time};
     }
     return result;
 }
@@ -69,11 +67,11 @@ std::string getCDAsMessage(){
     return result;
 }
 
-int getClientCooldown(int fd){
-    if(client_cooldowns.find(fd) == client_cooldowns.end()){
+int getClientCooldown(sf::TcpSocket* soc){
+    if(client_cooldowns.find(soc) == client_cooldowns.end()){
         return 0;
     }
-    return client_cooldowns[fd].second;
+    return client_cooldowns[soc].second;
 }
 
 void resetCooldowns(){

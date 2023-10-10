@@ -19,8 +19,12 @@ int main(int argc, char* argv[]){
 
     initServer(portNum);
     std::cout << "Server Started" << std::endl;
-    std::thread client_listener(acceptClient);
-    std::thread command_processor(processCommands);
+	sf::Thread client_listener(acceptClient);
+	sf::Thread command_processor(processCommands);
+	sf::Thread command_reader(readCommands);
+	client_listener.launch();
+	command_processor.launch();
+	command_reader.launch();
     std::string command;
     while(true){
         std::getline(std::cin, command);
@@ -60,8 +64,9 @@ int main(int argc, char* argv[]){
     }
     std::cout << "SHUTTING DOWN" << std::endl;
     stopServer();
-    client_listener.join();
-    command_processor.join();
+    client_listener.wait();
+    command_processor.wait();
+	command_reader.wait();
     closeServer();
     std::cout << "SERVER QUIT SUCCESSFULLY" << std::endl;
     return EXIT_SUCCESS;

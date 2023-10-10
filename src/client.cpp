@@ -55,7 +55,7 @@ void initClient(const char* server_addr, int port, const char* name){
 }
 
 void messageReceiver(){
-    while(receiveMessage(&client_socket) && gameRunning){
+    while(-1 != receiveMessage(&client_socket) && gameRunning){
     }
     std::cout << "MESSAGE RECEIVER ENDED" << std::endl;
     // close(client_fd);
@@ -68,7 +68,7 @@ void messageSender(Msg messageType, std::string msg){
 
 void processCommands(){
     while(gameRunning){
-        int server_fd;
+		sf::TcpSocket* server_fd;
         std::vector<char> msg;
         std::tie(server_fd, msg) = getTopMessage();
         if(msg.size() == 0){
@@ -76,6 +76,11 @@ void processCommands(){
         }
         Msg command_type = (Msg)msg[msg.size()-1];
         msg.erase(msg.end() - 1);
+		if(command_type == DISCONNECT){
+			gameRunning = false;
+			std::cout << "DISCONNECT" << std::endl;
+			break;
+		}
         if(command_type == BOARD_SEND){
             game.stringToBoard(msg, msg.size());
             continue;

@@ -6,6 +6,7 @@
 
 enum Msg{
     CONNECT,
+	DISCONNECT,
     BOARD_SEND,
     BOARD_REQ,
     MOVE,
@@ -18,13 +19,11 @@ enum Msg{
     SET_NAME,
 };
 
-void sendMessage(int fd, Msg messageType, std::string message);
 void sendMessage(sf::TcpSocket *soc, Msg messageType, std::string message);
 
-bool receiveMessage(int fd);
-bool receiveMessage(sf::TcpSocket *soc);
+int receiveMessage(sf::TcpSocket *soc);
 
-std::pair<int, std::vector<char>> getTopMessage();
+std::pair<sf::TcpSocket*, std::vector<char>> getTopMessage();
 
 
 
