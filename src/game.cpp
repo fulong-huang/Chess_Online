@@ -577,7 +577,7 @@ void Game::displayOverlay(){
 }
 
 void Game::initTextures(){
-    std::string srcDir = std::__fs::filesystem::path(__FILE__).parent_path();
+    std::string srcDir = std::filesystem::path(__FILE__).parent_path();
     srcDir += "/../resources/";
 
     this->backgroundTexture.loadFromFile(srcDir + "imgs/chessboard.png");

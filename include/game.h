@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "board.h"
 #include <filesystem>
+#include <algorithm>
 
 
 class Game{

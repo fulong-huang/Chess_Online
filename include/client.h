@@ -7,6 +7,7 @@
 //#include <fcntl.h>
 #include <game.h>
 #include <SFML/Network.hpp>
+#include <atomic>
 
 void initClient(const char* server_ip, int port, const char* name);
 void messageReceiver();

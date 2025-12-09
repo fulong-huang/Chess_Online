@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <queue> 
 #include <SFML/Network.hpp>
+#include <mutex>
 
 enum Msg{
     CONNECT,

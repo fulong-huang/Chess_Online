@@ -5,6 +5,7 @@
 #include <utility>
 #include <stdlib.h>
 #include "pieces.h"
+#include <algorithm>
 
 
 class ChessBoard{
