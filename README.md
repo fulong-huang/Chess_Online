@@ -4,12 +4,12 @@
 ## Description:
 Game of Chess, but can be played with more than two players.
 * Unlimited amount of (recommanded <= 10) players.
-* Each move will cost a movement point, whether the movement is valid or not.
-* Anyone can move any piece, as long as the movement is valid.
+* Each move will cost a movement point.
+* Anyone can move any piece, as long as the movement followed Chess rule (disregarding which side the user on).
 * Server can set cooldown time and maximum movement points of players.
 * Only valid moves will be shown on the client side UI.
-* Client can command lines to move, or request board if out of sync.
-* Client need to select pawn promotion type before movement was placed.
+* Client can use command lines to move, or request current server side board if believed to be out of sync.
+* Client can select/change pawn promotion type at all time, pawn will automatically promote to selected type.
 
 ## How to RUN: 
 &emsp;&emsp; Running the following command from the root directory to target CMAKE build directory:
